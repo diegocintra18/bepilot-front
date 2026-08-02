@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import BrandLogo from './BrandLogo.vue'
 import AppIcon from './AppIcon.vue'
 
 const mobileOpen = ref(false)
@@ -19,7 +18,7 @@ const navLinks = [
       class="mx-auto flex h-16 w-full max-w-container-max-width items-center justify-between px-margin-mobile md:px-margin-desktop"
     >
       <a href="#" class="cursor-pointer" aria-label="Vou ser Piloto - página inicial">
-        <BrandLogo />
+        <img src="/logo-site.png" alt="Vou ser Piloto" class="h-10 w-auto">
       </a>
 
       <nav class="hidden items-center gap-8 md:flex" aria-label="Navegação principal">
