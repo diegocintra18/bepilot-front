@@ -65,6 +65,14 @@ const icons = {
     inner: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
     filled: false,
   },
+  eye: {
+    inner: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    filled: false,
+  },
+  'eye-off': {
+    inner: '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 8 10 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/>',
+    filled: false,
+  },
 }
 
 const current = computed(() => icons[props.name])

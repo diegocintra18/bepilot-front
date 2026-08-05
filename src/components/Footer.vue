@@ -1,5 +1,4 @@
 <script setup>
-import BrandLogo from './BrandLogo.vue'
 import AppIcon from './AppIcon.vue'
 
 const footerLinks = [
@@ -22,7 +21,7 @@ const socialLinks = [
     >
       <div class="mb-6 text-center md:mb-0 md:text-left">
         <div class="mb-2 flex justify-center md:justify-start">
-          <BrandLogo />
+          <img src="/logo-site.png" alt="Vou ser Piloto" class="h-10 w-auto">
         </div>
         <p class="max-w-xs font-body-md text-body-md text-on-surface-variant">
           Acelere sua carreira na aviação com o melhor treinamento teórico do Brasil.

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#727780",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001c38",
+                        "on-error-container": "#93000a",
+                        "on-background": "#111c2d",
+                        "on-tertiary-fixed": "#002204",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-surface-variant": "#42474f",
+                        "on-tertiary-container": "#84d67f",
+                        "surface-container-high": "#dee8ff",
+                        "secondary": "#7a5900",
+                        "tertiary-container": "#035e17",
+                        "outline-variant": "#c2c6d1",
+                        "on-primary-fixed-variant": "#0d487e",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary": "#00440d",
+                        "secondary-fixed": "#ffdea3",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#a3f69c",
+                        "inverse-surface": "#263143",
+                        "background": "#f9f9ff",
+                        "primary-container": "#1d5288",
+                        "on-primary-container": "#9cc6ff",
+                        "surface": "#f9f9ff",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fdbf31",
+                        "secondary-fixed-dim": "#fabd2e",
+                        "on-secondary-container": "#6e4f00",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-secondary-fixed": "#261900",
+                        "on-surface": "#111c2d",
+                        "primary-fixed": "#d3e4ff",
+                        "primary": "#003b6b",
+                        "inverse-primary": "#a2c9ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#5d4200",
+                        "surface-variant": "#d8e3fb",
+                        "inverse-on-surface": "#ecf1ff",
+                        "surface-tint": "#2f6097",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container-low": "#f0f3ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-dim": "#cfdaf2",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-max-width": "1200px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "16px",
+                        "unit": "8px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "button-text": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .option-tile:hover {
+            box-shadow: 0px 4px 12px rgba(29, 82, 136, 0.08);
+        }
+        .active-question {
+            border-color: #003b6b;
+            background-color: #d3e4ff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopAppBar: Transactional Focused Mode (Simplified) -->
+<header class="bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-50">
+<div class="max-w-container-max-width mx-auto h-16 px-margin-desktop flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary font-display-lg text-headline-md font-bold">Vou ser Piloto</div>
+<div class="h-6 w-px bg-outline-variant mx-2 hidden md:block"></div>
+<div class="hidden md:block">
+<h1 class="font-headline-md text-headline-md text-on-surface">Simulado PPA - Matéria: Meteorologia</h1>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<!-- Timer Component -->
+<div class="flex items-center gap-2 bg-secondary-container px-4 py-2 rounded-xl">
+<span class="material-symbols-outlined text-on-secondary-container">timer</span>
+<span class="font-label-caps text-label-caps text-on-secondary-container" id="timer">01:24:12</span>
+</div>
+<button class="bg-primary text-on-primary font-button-text text-button-text px-6 py-2 rounded-xl hover:opacity-90 transition-all active:scale-95">
+                    Finalizar Simulado
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow max-w-container-max-width mx-auto w-full grid grid-cols-12 gap-gutter px-margin-desktop py-stack-lg">
+<!-- Sidebar Navigation (Questions Grid) -->
+<aside class="col-span-12 lg:col-span-3 order-2 lg:order-1">
+<div class="bg-surface border border-outline-variant p-stack-md rounded-xl">
+<h2 class="font-headline-md text-headline-md mb-stack-md">Progresso</h2>
+<div class="grid grid-cols-5 gap-2 mb-stack-lg">
+<!-- Status Logic: bg-primary-container (answered), border-primary (current), bg-surface (not touched), bg-secondary-container (marked for review) -->
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-primary-container text-on-primary-container">01</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-primary-container text-on-primary-container">02</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-primary-container text-on-primary-container">03</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps border-2 border-primary text-primary font-bold">04</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-surface border border-outline-variant text-on-surface-variant">05</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-secondary-container text-on-secondary-container" title="Marcada para Revisão">
+<span class="material-symbols-outlined text-[14px]">flag</span>
+</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-surface border border-outline-variant text-on-surface-variant">07</button>
+<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-surface border border-outline-variant text-on-surface-variant">08</button>
+<!-- Remaining placeholders -->
+<script>
+                        for(let i=9; i<=20; i++) {
+                            document.write(`<button class="w-full aspect-square flex items-center justify-center rounded-lg font-label-caps bg-surface border border-outline-variant text-on-surface-variant">${i < 10 ? '0'+i : i}</button>`);
+                        }
+                    </script>
+</div>
+<div class="space-y-3 pt-stack-md border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-primary-container rounded"></div>
+<span class="text-body-md font-body-md text-on-surface-variant">Respondida</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 border-2 border-primary rounded"></div>
+<span class="text-body-md font-body-md text-on-surface-variant">Atual</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-secondary-container rounded"></div>
+<span class="text-body-md font-body-md text-on-surface-variant">Revisar</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Question Area -->
+<section class="col-span-12 lg:col-span-9 order-1 lg:order-2">
+<!-- Question Content Card -->
+<div class="bg-surface border border-outline-variant rounded-xl overflow-hidden relative">
+<!-- Progress Strip -->
+<div class="h-1 w-full bg-surface-container">
+<div class="h-full bg-primary-container" style="width: 20%;"></div>
+</div>
+<div class="p-stack-lg">
+<div class="flex justify-between items-start mb-stack-md">
+<span class="bg-surface-variant text-on-surface-variant font-label-caps text-label-caps px-3 py-1 rounded-full">QUESTÃO 04 DE 20</span>
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-secondary transition-colors group">
+<span class="material-symbols-outlined group-active:scale-110 transition-transform" data-weight="fill">flag</span>
+<span class="font-button-text text-button-text">Marcar para revisão</span>
+</button>
+</div>
+<h2 class="font-headline-md text-headline-md mb-stack-lg leading-relaxed">
+                        A formação de nevoeiro de radiação é favorecida por qual das seguintes condições atmosféricas?
+                    </h2>
+<!-- Options Grid (Tile Style) -->
+<div class="space-y-stack-md">
+<label class="block cursor-pointer group">
+<input class="hidden peer" name="exam_option" type="radio"/>
+<div class="option-tile flex items-center gap-4 p-stack-md border border-outline-variant rounded-xl bg-surface peer-checked:border-primary peer-checked:bg-primary-fixed transition-all">
+<div class="w-8 h-8 flex-shrink-0 border-2 border-outline-variant rounded-full flex items-center justify-center font-bold text-on-surface-variant peer-checked:border-primary peer-checked:text-primary">
+                                    A
+                                </div>
+<span class="font-body-md text-body-md text-on-surface">Ventos fortes acima de 15 nós e céu nublado com nuvens baixas.</span>
+</div>
+</label>
+<label class="block cursor-pointer group">
+<input class="hidden peer" name="exam_option" type="radio"/>
+<div class="option-tile flex items-center gap-4 p-stack-md border border-outline-variant rounded-xl bg-surface peer-checked:border-primary peer-checked:bg-primary-fixed transition-all">
+<div class="w-8 h-8 flex-shrink-0 border-2 border-outline-variant rounded-full flex items-center justify-center font-bold text-on-surface-variant peer-checked:border-primary peer-checked:text-primary">
+                                    B
+                                </div>
+<span class="font-body-md text-body-md text-on-surface">Céu claro, ventos fracos (2 a 5 nós) e alta umidade relativa.</span>
+</div>
+</label>
+<label class="block cursor-pointer group">
+<input class="hidden peer" name="exam_option" type="radio"/>
+<div class="option-tile flex items-center gap-4 p-stack-md border border-outline-variant rounded-xl bg-surface peer-checked:border-primary peer-checked:bg-primary-fixed transition-all">
+<div class="w-8 h-8 flex-shrink-0 border-2 border-outline-variant rounded-full flex items-center justify-center font-bold text-on-surface-variant peer-checked:border-primary peer-checked:text-primary">
+                                    C
+                                </div>
+<span class="font-body-md text-body-md text-on-surface">Passagem de uma frente fria intensa com precipitação contínua.</span>
+</div>
+</label>
+<label class="block cursor-pointer group">
+<input class="hidden peer" name="exam_option" type="radio"/>
+<div class="option-tile flex items-center gap-4 p-stack-md border border-outline-variant rounded-xl bg-surface peer-checked:border-primary peer-checked:bg-primary-fixed transition-all">
+<div class="w-8 h-8 flex-shrink-0 border-2 border-outline-variant rounded-full flex items-center justify-center font-bold text-on-surface-variant peer-checked:border-primary peer-checked:text-primary">
+                                    D
+                                </div>
+<span class="font-body-md text-body-md text-on-surface">Baixa umidade relativa e ventos calmos em regiões montanhosas.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="bg-surface-container-lowest p-stack-md border-t border-outline-variant flex justify-between items-center">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all font-button-text text-button-text">
+<span class="material-symbols-outlined">arrow_back</span>
+                        Anterior
+                    </button>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-xl hover:opacity-90 active:scale-95 transition-all font-button-text text-button-text shadow-sm">
+                        Próxima Questão
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Reference Image (Optional/Contextual) -->
+<div class="mt-stack-lg bg-surface border border-outline-variant rounded-xl p-stack-md flex gap-stack-md items-center">
+<div class="w-32 h-32 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A detailed technical meteorological chart showing air pressure isobars and dew point temperature gradients over a coastal region, rendered in a clean professional blue and gray technical manual style for aviation students." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJIhSdd-HI0deE_7ciy9qR06EaBfDDmYn_1_NXc9H9RISiNL-vYwzLQew43BMt6_lvfZJ-91iqGXGnsNuGIsfzFADCQbt5gJxiTZp_CGm0K2ALknGwk4f02-4oRfX4Py0Pe3t2FvHT0mbxHnG4Yly_1WPRjGHEep0bnZknPzBjx9WBry8BRJA41lbhlqLRKa5ttcko-A1N8wdRpwkcE5L0bOQFqTz8TNvmmD8A2VkmadVuPfQFhMHM"/>
+</div>
+<div>
+<h3 class="font-button-text text-button-text text-on-surface mb-1">Carta de Tempo Significativo (SIGWX)</h3>
+<p class="text-body-md text-on-surface-variant leading-tight">Consulte a imagem acima para auxiliar na interpretação das condições de umidade e vento na região sudeste.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer: Persistent Support/Help (Optional) -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant py-stack-md mt-auto">
+<div class="max-w-container-max-width mx-auto px-margin-desktop flex flex-col md:flex-row justify-between items-center text-on-surface-variant opacity-60">
+<span class="font-label-caps text-label-caps">© 2024 VOU SER PILOTO - AMBIENTE DE SIMULADO</span>
+<div class="flex gap-stack-md mt-stack-sm md:mt-0">
+<a class="font-label-caps text-label-caps hover:underline transition-all" href="#">AJUDA</a>
+<a class="font-label-caps text-label-caps hover:underline transition-all" href="#">TERMOS</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple timer logic
+        let totalSeconds = 5052; // 01:24:12
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            timerElement.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            if(totalSeconds > 0) totalSeconds--;
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Selection micro-interaction
+        const options = document.querySelectorAll('input[type="radio"]');
+        options.forEach(option => {
+            option.addEventListener('change', () => {
+                // Clear other highlights
+                document.querySelectorAll('.option-tile').forEach(tile => {
+                    tile.classList.remove('bg-primary-fixed', 'border-primary');
+                });
+                if(option.checked) {
+                    option.nextElementSibling.classList.add('bg-primary-fixed', 'border-primary');
+                }
+            });
+        });
+    </script>
+</body></html>

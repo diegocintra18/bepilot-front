@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c2c6d1;
+            border-radius: 4px;
+        }
+        .performance-gradient {
+            background: linear-gradient(135deg, #1d5288 0%, #003b6b 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#727780",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001c38",
+                        "on-error-container": "#93000a",
+                        "on-background": "#111c2d",
+                        "on-tertiary-fixed": "#002204",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-surface-variant": "#42474f",
+                        "on-tertiary-container": "#84d67f",
+                        "surface-container-high": "#dee8ff",
+                        "secondary": "#7a5900",
+                        "tertiary-container": "#035e17",
+                        "outline-variant": "#c2c6d1",
+                        "on-primary-fixed-variant": "#0d487e",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary": "#00440d",
+                        "secondary-fixed": "#ffdea3",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#a3f69c",
+                        "inverse-surface": "#263143",
+                        "background": "#f9f9ff",
+                        "primary-container": "#1d5288",
+                        "on-primary-container": "#9cc6ff",
+                        "surface": "#f9f9ff",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fdbf31",
+                        "secondary-fixed-dim": "#fabd2e",
+                        "on-secondary-container": "#6e4f00",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-secondary-fixed": "#261900",
+                        "on-surface": "#111c2d",
+                        "primary-fixed": "#d3e4ff",
+                        "primary": "#003b6b",
+                        "inverse-primary": "#a2c9ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#5d4200",
+                        "surface-variant": "#d8e3fb",
+                        "inverse-on-surface": "#ecf1ff",
+                        "surface-tint": "#2f6097",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container-low": "#f0f3ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-dim": "#cfdaf2",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-max-width": "1200px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "16px",
+                        "unit": "8px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "button-text": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50">
+<div class="flex justify-between items-center h-16 px-margin-desktop w-full max-w-container-max-width mx-auto">
+<div class="flex items-center gap-4">
+<img alt="Logo Vou ser Piloto" class="h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDRg2Ek0OKQWl3nUf4DT0EFBa78IdOtUub6mkUyG_BotlKlegz1Ta53wHbAljXCrVQrqonupKvAl7RJ75XIWmBOLO2FsrN3r2Wn_UrZvjrgNMj5L6aZOegF9eHuL9by7VbmMi0PWK1gSqOmKrD3l2bjXxeKK_YWs1KuxkStsIaKlxMg_w256kV5VsbiMta5Tj2V1awnW5fvAiw6S_uLY2PtobDvNhA5JS-08Q7jBEwy5VCfmO-0P1e5d_WRsR2YAgvVw"/>
+<span class="font-display-lg text-headline-md font-bold text-primary dark:text-primary-fixed hidden md:block">Vou ser Piloto</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-button-text text-button-text" href="#">Dashboard</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-button-text text-button-text" href="#">Simulados</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-button-text text-button-text" href="#">Matérias</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-button-text text-button-text" href="#">Histórico</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-low p-2 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-low p-2 rounded-full transition-all">account_circle</button>
+</div>
+</div>
+</header>
+<!-- Main Content Grid -->
+<main class="pt-24 pb-stack-lg px-margin-mobile md:px-0 w-full max-w-container-max-width mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Sidebar (Mobile Hidden) -->
+<aside class="hidden md:block md:col-span-3">
+<nav class="bg-surface-container-low dark:bg-surface-container-highest rounded-xl p-stack-md sticky top-24 border border-outline-variant/30">
+<div class="mb-stack-lg flex items-center gap-3 p-2">
+<div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-primary font-bold">BS</div>
+<div>
+<p class="font-button-text text-button-text text-on-surface">Bento Silva</p>
+<p class="text-sm text-on-surface-variant">Piloto em Formação</p>
+</div>
+</div>
+<ul class="space-y-1">
+<li>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl px-4 py-3 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text">Home</span>
+</a>
+</li>
+<li>
+<a class="bg-primary-container text-on-primary-container rounded-xl px-4 py-3 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined filled-icon" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-button-text">Simulados</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl px-4 py-3 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-button-text">Performance</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Results Area -->
+<div class="md:col-span-9 space-y-stack-lg">
+<!-- Result Hero Card -->
+<section class="bg-white border border-outline-variant rounded-xl overflow-hidden relative">
+<div class="h-2 performance-gradient"></div>
+<div class="p-stack-lg flex flex-col md:flex-row items-center justify-between gap-stack-lg">
+<div class="text-center md:text-left">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Simulado Final ANAC</h1>
+<p class="text-on-surface-variant">Concluído em 14 de Março de 2024</p>
+</div>
+<div class="flex items-center gap-8">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle cx="64" cy="64" fill="none" r="58" stroke="#e7eeff" stroke-width="8"></circle>
+<circle class="transition-all duration-1000 ease-out" cx="64" cy="64" fill="none" r="58" stroke="#003b6b" stroke-dasharray="364.4" stroke-dashoffset="54.6" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg text-headline-lg text-primary">85%</span>
+<span class="font-label-caps text-label-caps text-tertiary-container tracking-widest">APROVADO</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-sm filled-icon" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-caps text-label-caps">META ALCANÇADA</span>
+</div>
+<div class="flex gap-4">
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-button-text px-6 py-3 rounded-lg transition-all shadow-sm">Review Errors</button>
+<button class="border-2 border-primary text-primary font-button-text px-6 py-3 rounded-lg hover:bg-surface-container transition-all">Back to Dashboard</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Breakdown Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Meteorology -->
+<div class="bg-white border border-outline-variant p-stack-md rounded-xl space-y-4 hover:border-primary/50 transition-colors cursor-default group">
+<div class="flex justify-between items-start">
+<span class="font-headline-md text-headline-md text-on-surface">Meteorologia</span>
+<span class="font-label-caps text-label-caps text-primary bg-primary-fixed/30 px-2 py-1 rounded">90%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[90%] group-hover:opacity-80 transition-all"></div>
+</div>
+<p class="text-sm text-on-surface-variant">Excelente desempenho em interpretação de cartas METAR.</p>
+</div>
+<!-- Regulation -->
+<div class="bg-white border border-outline-variant p-stack-md rounded-xl space-y-4 hover:border-primary/50 transition-colors cursor-default group">
+<div class="flex justify-between items-start">
+<span class="font-headline-md text-headline-md text-on-surface">Regulamentos</span>
+<span class="font-label-caps text-label-caps text-secondary bg-secondary-fixed/30 px-2 py-1 rounded">80%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[80%] group-hover:opacity-80 transition-all"></div>
+</div>
+<p class="text-sm text-on-surface-variant">Atenção aos novos limites de altitude para voos VFR.</p>
+</div>
+<!-- Theory of Flight -->
+<div class="bg-white border border-outline-variant p-stack-md rounded-xl space-y-4 hover:border-primary/50 transition-colors cursor-default group">
+<div class="flex justify-between items-start">
+<span class="font-headline-md text-headline-md text-on-surface">Teoria de Voo</span>
+<span class="font-label-caps text-label-caps text-primary bg-primary-fixed/30 px-2 py-1 rounded">85%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[85%] group-hover:opacity-80 transition-all"></div>
+</div>
+<p class="text-sm text-on-surface-variant">Estabilidade lateral e comandos de voo dominados.</p>
+</div>
+</section>
+<!-- Detailed Question List -->
+<section class="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="bg-surface-container-low px-stack-lg py-4 border-b border-outline-variant flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary">Análise de Questões</h2>
+<div class="flex gap-4">
+<span class="flex items-center gap-1 text-sm"><span class="w-3 h-3 bg-tertiary-container rounded-full"></span> 17 Corretas</span>
+<span class="flex items-center gap-1 text-sm"><span class="w-3 h-3 bg-error rounded-full"></span> 3 Incorretas</span>
+</div>
+</div>
+<div class="divide-y divide-outline-variant/30">
+<!-- Correct Question Item -->
+<div class="px-stack-lg py-stack-md hover:bg-surface-container-lowest transition-all cursor-pointer group flex items-start gap-6" onclick="this.querySelector('.explanation').classList.toggle('hidden')">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-caps text-on-surface-variant">Q01</span>
+<span class="material-symbols-outlined text-tertiary-container filled-icon" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg text-on-surface mb-2 group-hover:text-primary transition-colors">Qual é o efeito do aumento da densidade do ar na performance de decolagem de uma aeronave?</h3>
+<div class="explanation hidden mt-4 bg-surface-container-low p-4 rounded-lg border-l-4 border-primary">
+<p class="font-bold text-primary mb-2">Explicação Detalhada:</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                        Um aumento na densidade do ar melhora a performance de decolagem porque proporciona maior sustentação às asas e maior tração à hélice para uma mesma velocidade de rotação. Além disso, o motor produz mais potência devido à maior massa de ar sendo admitida.
+                                    </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-all">expand_more</span>
+</div>
+<!-- Incorrect Question Item -->
+<div class="px-stack-lg py-stack-md hover:bg-surface-container-lowest transition-all cursor-pointer group flex items-start gap-6" onclick="this.querySelector('.explanation').classList.toggle('hidden')">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-caps text-on-surface-variant">Q02</span>
+<span class="material-symbols-outlined text-error filled-icon" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg text-on-surface mb-2 group-hover:text-primary transition-colors">O código "CAVOK" em um METAR indica que a visibilidade é de pelo menos:</h3>
+<div class="explanation hidden mt-4 bg-error-container/30 p-4 rounded-lg border-l-4 border-error">
+<p class="font-bold text-error mb-2">Sua Resposta: 5km • Resposta Correta: 10km</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                        CAVOK (Ceiling and Visibility OK) exige que a visibilidade seja de 10 km ou mais, não existam nuvens abaixo de 5.000 pés ou da altitude mínima de setor (o que for maior), e não haja fenômenos de tempo significativo ou cumulonimbus.
+                                    </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-all">expand_more</span>
+</div>
+<!-- Correct Question Item -->
+<div class="px-stack-lg py-stack-md hover:bg-surface-container-lowest transition-all cursor-pointer group flex items-start gap-6" onclick="this.querySelector('.explanation').classList.toggle('hidden')">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-caps text-on-surface-variant">Q03</span>
+<span class="material-symbols-outlined text-tertiary-container filled-icon" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1">
+<h3 class="font-body-lg text-body-lg text-on-surface mb-2 group-hover:text-primary transition-colors">Em um circuito de tráfego padrão, todas as curvas devem ser feitas para a:</h3>
+<div class="explanation hidden mt-4 bg-surface-container-low p-4 rounded-lg border-l-4 border-primary">
+<p class="font-bold text-primary mb-2">Explicação Detalhada:</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                        De acordo com o ICA 100-12, o circuito de tráfego padrão é realizado com curvas à esquerda, a menos que haja instruções específicas do controle ou indicações locais em contrário.
+                                    </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-all">expand_more</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant dark:border-outline py-stack-lg">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop w-full max-w-container-max-width mx-auto gap-4">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-display-lg text-headline-md text-primary mb-2">Vou ser Piloto</span>
+<p class="text-on-surface-variant text-sm">© 2024 Vou ser Piloto. Todos os direitos reservados.</p>
+</div>
+<nav class="flex gap-6">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Termos de Uso</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Privacidade</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Ajuda</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Institucional</a>
+</nav>
+</div>
+</footer>
+<script>
+        // Simple interactive toggle for questions (if JS is allowed for micro-interactions)
+        document.querySelectorAll('.question-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const explanation = item.querySelector('.explanation');
+                explanation.classList.toggle('hidden');
+            });
+        });
+    </script>
+</body></html>

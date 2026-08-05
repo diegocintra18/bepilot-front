@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vou ser Piloto - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#727780",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001c38",
+                        "on-error-container": "#93000a",
+                        "on-background": "#111c2d",
+                        "on-tertiary-fixed": "#002204",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-surface-variant": "#42474f",
+                        "on-tertiary-container": "#84d67f",
+                        "surface-container-high": "#dee8ff",
+                        "secondary": "#7a5900",
+                        "tertiary-container": "#035e17",
+                        "outline-variant": "#c2c6d1",
+                        "on-primary-fixed-variant": "#0d487e",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary": "#00440d",
+                        "secondary-fixed": "#ffdea3",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#a3f69c",
+                        "inverse-surface": "#263143",
+                        "background": "#f9f9ff",
+                        "primary-container": "#1d5288",
+                        "on-primary-container": "#9cc6ff",
+                        "surface": "#f9f9ff",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#fdbf31",
+                        "secondary-fixed-dim": "#fabd2e",
+                        "on-secondary-container": "#6e4f00",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-secondary-fixed": "#261900",
+                        "on-surface": "#111c2d",
+                        "primary-fixed": "#d3e4ff",
+                        "primary": "#003b6b",
+                        "inverse-primary": "#a2c9ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#5d4200",
+                        "surface-variant": "#d8e3fb",
+                        "inverse-on-surface": "#ecf1ff",
+                        "surface-tint": "#2f6097",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container-low": "#f0f3ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "surface-dim": "#cfdaf2",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-max-width": "1200px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "16px",
+                        "unit": "8px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "button-text": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "button-text": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+        .line-chart-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c2c6d1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-stack-md bg-surface-container-low border-r border-outline-variant w-64 z-50">
+<div class="px-6 mb-8 flex justify-center">
+<img alt="Vou ser Piloto Logo" class="h-16 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLnfK2IIPtYpcziA7VOf2lH0OmFKTssn7iCVQXzpeq_gJjyGiyU5Ok25Mb0l0vyA1fF55wy9bDa2Hoh-CWL97-aD5zrMQe1TXBk4tygHv554XULoNTggwiEMsxO4824h5b39qYJgyMV7FB2pdMErMhVAwpy4G3iOZG0A6rY7whG3Wl7TwyIhzv3epPerZ60UtAAc9eQ-QX8PgJ1R6Ay6reKJMn5kY_ls1zjfNuhup3IsWrWX1CbWQJd5-Rny9cHvq0WQ"/>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar">
+<!-- Active Navigation Logic: Dashboard -->
+<a class="bg-primary-container text-on-primary-container rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Home</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Meus Cursos</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span class="font-button-text text-button-text">Simulados</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-button-text text-button-text">Performance</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-button-text text-button-text">Configurações</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-4">
+<button class="w-full bg-secondary-container text-on-secondary-container font-button-text text-button-text py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                Iniciar Simulado
+            </button>
+<div class="pt-4 border-t border-outline-variant space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl px-4 py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-button-text text-button-text">Suporte</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-xl px-4 py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined text-error">logout</span>
+<span class="font-button-text text-button-text">Sair</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col h-screen relative">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center h-16 px-12 w-full bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Dashboard do Estudante</h1>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-surface-container-low cursor-pointer transition-all">
+<div class="text-right hidden sm:block">
+<p class="font-button-text text-button-text text-on-surface leading-tight">Bento Silva</p>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">Piloto em Formação</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young male student in his mid-20s wearing a clean white pilot shirt with epaulettes, smiling confidently. The lighting is soft and corporate, with a clean neutral background. High-fidelity digital photography with professional retouching, conveying authority and focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWl4fbCdteDRwT8FQre1lVwEauY1H7hM7ids5Xh7kMkXAWvfzg6_JPIXxe2z04jaxqxHz0zco0UjEBqZN3h49UWRICY6blGlAvmmW2jETxOx7xgja4zQ9VfdEMmHfeQ-7oR1vuQVSTZB215dXaD2cZ3x5rLMaEQ_xtj-PQ0qm2K4kDLZ-E9eaJy0ANNmR9R8PqIp9B_NPKtwDSvILgZokqh8BzTeLJHG2RL3AfIUbei1yljJsuvB0r"/>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-12 custom-scrollbar">
+<div class="max-w-[1200px] mx-auto space-y-stack-lg">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-outline-variant pb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Bom dia, Bento!</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Seu progresso nos simulados PPA está <span class="text-tertiary font-bold">12% superior</span> à semana passada. Mantenha o foco!</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary font-button-text text-button-text px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined">rocket_launch</span>
+                            Novo PPA Exam
+                        </button>
+<button class="bg-white border-2 border-primary text-primary font-button-text text-button-text px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-primary-fixed transition-all">
+<span class="material-symbols-outlined">history</span>
+                            Revisar Erros
+                        </button>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Performance Chart Card -->
+<div class="md:col-span-8 bg-white border border-outline-variant rounded-xl p-6 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Evolução de Performance</h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant font-label-caps text-label-caps rounded-full">Últimos 7 dias</span>
+</div>
+</div>
+<div class="chart-container flex items-end justify-between gap-4">
+<!-- Simple Mock Chart Visualization -->
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-surface-container-low rounded-t-lg relative" style="height: 65%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">65%</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">SEG</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-surface-container-low rounded-t-lg relative" style="height: 72%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">72%</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">TER</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-surface-container-low rounded-t-lg relative" style="height: 68%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">68%</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">QUA</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-surface-container-low rounded-t-lg relative" style="height: 85%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">85%</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">QUI</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary-container rounded-t-lg relative" style="height: 92%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-xs px-2 py-1 rounded opacity-100 transition-opacity">92%</div>
+</div>
+<span class="font-label-caps text-label-caps text-primary font-bold">HOJE</span>
+</div>
+</div>
+</div>
+<!-- Quick Stats Side Cards -->
+<div class="md:col-span-4 flex flex-col gap-gutter">
+<div class="bg-surface-container-highest rounded-xl p-6 flex flex-col justify-between border border-outline-variant">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Tempo de Estudo</p>
+<h4 class="font-display-lg text-headline-lg text-primary">12h 45m</h4>
+</div>
+<div class="mt-4 flex items-center gap-2 text-tertiary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-sm font-bold">+2.4h esta semana</span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-6 flex flex-col justify-between shadow-sm">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Média Geral</p>
+<h4 class="font-display-lg text-headline-lg text-on-surface">84%</h4>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">military_tech</span>
+</div>
+</div>
+<div class="mt-4 w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[84%]"></div>
+</div>
+</div>
+</div>
+<!-- Recommended Topics -->
+<div class="md:col-span-5 bg-white border border-outline-variant rounded-xl p-6 shadow-sm overflow-hidden flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Tópicos Recomendados</h3>
+<span class="material-symbols-outlined text-primary cursor-pointer">info</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-6 italic">Baseado nos seus erros recentes em Navegação Visual.</p>
+<div class="space-y-3">
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-center mb-2">
+<span class="font-button-text text-button-text text-primary">Cálculo de Deriva</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-error w-[30%]"></div>
+</div>
+<span class="font-label-caps text-xs text-error font-bold">30% Acerto</span>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-center mb-2">
+<span class="font-button-text text-button-text text-primary">Regras de Tráfego VFR</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed-dim w-[55%]"></div>
+</div>
+<span class="font-label-caps text-xs text-secondary font-bold">55% Acerto</span>
+</div>
+</div>
+</div>
+<button class="mt-auto pt-6 text-primary font-bold text-center hover:underline">Ver plano de estudos completo</button>
+</div>
+<!-- Recent Simulations -->
+<div class="md:col-span-7 bg-white border border-outline-variant rounded-xl p-6 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Simulados Recentes</h3>
+<button class="text-sm font-button-text text-primary-container">Ver Histórico</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="border-b border-outline-variant">
+<tr class="font-label-caps text-label-caps text-on-surface-variant">
+<th class="py-3 px-2">SIMULADO</th>
+<th class="py-3 px-2">DATA</th>
+<th class="py-3 px-2">RESULTADO</th>
+<th class="py-3 px-2 text-right">AÇÕES</th>
+</tr>
+</thead>
+<tbody class="font-body-md">
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2">
+<p class="font-bold text-on-surface">Simulado PPA #242</p>
+<p class="text-xs text-on-surface-variant">60 questões • 1h 20m</p>
+</td>
+<td class="py-4 px-2 text-sm text-on-surface-variant">14 Out, 2024</td>
+<td class="py-4 px-2">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-xs font-bold">APROVADO (88%)</span>
+</td>
+<td class="py-4 px-2 text-right">
+<button class="p-2 hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2">
+<p class="font-bold text-on-surface">Meteorologia Avançada</p>
+<p class="text-xs text-on-surface-variant">20 questões • 25m</p>
+</td>
+<td class="py-4 px-2 text-sm text-on-surface-variant">12 Out, 2024</td>
+<td class="py-4 px-2">
+<span class="px-2.5 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold">REPROVADO (65%)</span>
+</td>
+<td class="py-4 px-2 text-right">
+<button class="p-2 hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 px-2">
+<p class="font-bold text-on-surface">Simulado PPA #241</p>
+<p class="text-xs text-on-surface-variant">60 questões • 1h 45m</p>
+</td>
+<td class="py-4 px-2 text-sm text-on-surface-variant">10 Out, 2024</td>
+<td class="py-4 px-2">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-xs font-bold">APROVADO (78%)</span>
+</td>
+<td class="py-4 px-2 text-right">
+<button class="p-2 hover:text-primary"><span class="material-symbols-outlined">visibility</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-24 border-t border-outline-variant pt-8 flex flex-col md:flex-row justify-between items-center gap-6 pb-8">
+<p class="font-body-md text-on-surface-variant">© 2024 Vou ser Piloto. Todos os direitos reservados.</p>
+<div class="flex gap-8">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Termos de Uso</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Privacidade</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all hover:underline decoration-secondary" href="#">Ajuda</a>
+</div>
+</footer>
+</div>
+</main>
+<!-- Success Message Toast (Interactivity) -->
+<div class="fixed bottom-8 right-8 bg-on-background text-white px-6 py-3 rounded-lg shadow-xl translate-y-20 transition-transform duration-300 flex items-center gap-3" id="toast">
+<span class="material-symbols-outlined text-tertiary-fixed">check_circle</span>
+<span>Simulado salvo com sucesso!</span>
+</div>
+<script>
+        // Micro-interaction: Show toast when clicking on certain elements
+        const buttons = document.querySelectorAll('button');
+        const toast = document.getElementById('toast');
+        
+        buttons.forEach(btn => {
+            if (btn.innerText.includes('Simulado') || btn.innerText.includes('Exam')) {
+                btn.addEventListener('click', () => {
+                    toast.classList.remove('translate-y-20');
+                    setTimeout(() => {
+                        toast.classList.add('translate-y-20');
+                    }, 3000);
+                });
+            }
+        });
+    </script>
+</body></html>

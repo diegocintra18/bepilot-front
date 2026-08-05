@@ -1,0 +1,3891 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BePilot API",
+    "description": "API de gerenciamento de usuários do BePilot.\nUtiliza autenticação via Bearer Token (access tokens).\n",
+    "version": "1.0.0",
+    "contact": {
+      "name": "BePilot Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333/api/v1",
+      "description": "Desenvolvimento local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoints de autenticação (signup, login, logout, profile)"
+    },
+    {
+      "name": "Users",
+      "description": "Endpoints de gerenciamento de usuários (CRUD)"
+    },
+    {
+      "name": "Courses",
+      "description": "Endpoints de gerenciamento de cursos (CRUD)"
+    },
+    {
+      "name": "Subjects",
+      "description": "Endpoints de gerenciamento de assuntos (CRUD)"
+    },
+    {
+      "name": "Questions",
+      "description": "Endpoints de gerenciamento de questões (CRUD)"
+    },
+    {
+      "name": "Exams",
+      "description": "Endpoints de simulados (iniciar, finalizar, histórico)"
+    },
+    {
+      "name": "Statistics",
+      "description": "Endpoints de estatísticas do usuário"
+    },
+    {
+      "name": "Admin",
+      "description": "Endpoints administrativos"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Informe o token de acesso no formato \"Bearer <token>\""
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID do usuário"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Nome completo do usuário"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário"
+          },
+          "userType": {
+            "type": "integer",
+            "description": "Tipo de usuário (1 = aluno, 2 = admin)",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          },
+          "initials": {
+            "type": "string",
+            "description": "Iniciais do nome do usuário"
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "email",
+          "userType",
+          "createdAt",
+          "updatedAt",
+          "initials"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Nome completo do usuário"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Senha do usuário"
+          },
+          "userType": {
+            "type": "integer",
+            "description": "Tipo de usuário (1 = aluno, 2 = admin)",
+            "enum": [
+              1,
+              2
+            ]
+          }
+        },
+        "required": [
+          "fullName",
+          "email",
+          "password"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Nome completo do usuário"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Senha do usuário"
+          },
+          "userType": {
+            "type": "integer",
+            "description": "Tipo de usuário (1 = aluno, 2 = admin)",
+            "enum": [
+              1,
+              2
+            ]
+          }
+        }
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Senha do usuário"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "token": {
+            "type": "string",
+            "description": "Token de acesso Bearer"
+          }
+        },
+        "required": [
+          "user",
+          "token"
+        ]
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro genérica"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Campo que falhou na validação"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Mensagem de erro do campo"
+                }
+              }
+            },
+            "description": "Lista de erros de validação por campo"
+          }
+        },
+        "required": [
+          "message",
+          "errors"
+        ]
+      },
+      "NotFoundError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ForbiddenError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro de permissão"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UnauthorizedError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SuccessMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de sucesso"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID do curso"
+          },
+          "code": {
+            "type": "string",
+            "description": "Código do curso (ex: PP, PC)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do curso"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug gerado automaticamente"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do curso"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Se o curso está ativo"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "description": "Ordem de exibição"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "slug",
+          "isActive",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCourseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código do curso (ex: PP, PC)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do curso"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do curso"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true,
+            "description": "Se o curso está ativo"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "default": 0,
+            "description": "Ordem de exibição"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ]
+      },
+      "UpdateCourseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código do curso"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do curso"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do curso"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Se o curso está ativo"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "description": "Ordem de exibição"
+          }
+        }
+      },
+      "Subject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID do assunto"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do assunto"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug gerado automaticamente"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do assunto"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Status do assunto"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "description": "Ordem de exibição"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Course"
+            },
+            "description": "Cursos associados"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "status",
+          "sortOrder",
+          "createdAt",
+          "updatedAt",
+          "courses"
+        ]
+      },
+      "CreateSubjectDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do assunto"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do assunto"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "default": "active",
+            "description": "Status do assunto"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "default": 0,
+            "description": "Ordem de exibição"
+          },
+          "courseIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs dos cursos para associar"
+          }
+        },
+        "required": [
+          "name",
+          "courseIds"
+        ]
+      },
+      "UpdateSubjectDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do assunto"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Descrição do assunto"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Status do assunto"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "description": "Ordem de exibição"
+          },
+          "courseIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs dos cursos para associar"
+          }
+        }
+      },
+      "SubjectPaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subject"
+            },
+            "description": "Lista de assuntos"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "perPage": {
+                "type": "integer",
+                "description": "Registros por página"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Página atual"
+              }
+            },
+            "required": [
+              "total",
+              "perPage",
+              "page"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "CoursePaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Course"
+            },
+            "description": "Lista de cursos"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "perPage": {
+                "type": "integer",
+                "description": "Registros por página"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Página atual"
+              }
+            },
+            "required": [
+              "total",
+              "perPage",
+              "page"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "QuestionOption": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID da opção"
+          },
+          "description": {
+            "type": "string",
+            "description": "Texto da opção"
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "description": "Se é a opção correta"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "isCorrect",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID da questão"
+          },
+          "statement": {
+            "type": "string",
+            "description": "Enunciado da questão"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explicação da resposta"
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true,
+            "description": "Referência bibliográfica"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ],
+            "description": "Nível de dificuldade"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Status da questão"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionOption"
+            },
+            "description": "Opções da questão"
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subject"
+            },
+            "description": "Assuntos associados"
+          }
+        },
+        "required": [
+          "id",
+          "statement",
+          "explanation",
+          "difficulty",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "options",
+          "subjects"
+        ]
+      },
+      "CreateQuestionDto": {
+        "type": "object",
+        "properties": {
+          "statement": {
+            "type": "string",
+            "description": "Enunciado da questão"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explicação da resposta"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Referência bibliográfica"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ],
+            "default": "medium",
+            "description": "Nível de dificuldade"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "default": "active",
+            "description": "Status da questão"
+          },
+          "subjectIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "description": "IDs dos assuntos para associar"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateQuestionOptionDto"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "Opções da questão (exatamente 4)"
+          }
+        },
+        "required": [
+          "statement",
+          "explanation",
+          "subjectIds",
+          "options"
+        ]
+      },
+      "CreateQuestionOptionDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Texto da opção"
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "description": "Se é a opção correta (exatamente 1 deve ser true)"
+          }
+        },
+        "required": [
+          "description",
+          "isCorrect"
+        ]
+      },
+      "UpdateQuestionDto": {
+        "type": "object",
+        "properties": {
+          "statement": {
+            "type": "string",
+            "description": "Enunciado da questão"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explicação da resposta"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Referência bibliográfica"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ],
+            "description": "Nível de dificuldade"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Status da questão"
+          },
+          "subjectIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs dos assuntos para associar"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateQuestionOptionDto"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "Opções da questão (exatamente 4)"
+          }
+        }
+      },
+      "QuestionPaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Question"
+            },
+            "description": "Lista de questões"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "perPage": {
+                "type": "integer",
+                "description": "Registros por página"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Página atual"
+              }
+            },
+            "required": [
+              "total",
+              "perPage",
+              "page"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "Exam": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID do exame"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do exame"
+          },
+          "courseId": {
+            "type": "integer",
+            "description": "ID do curso"
+          },
+          "subjectId": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID do assunto (opcional)"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "description": "Quantidade total de questões"
+          },
+          "totalTimeMinutes": {
+            "type": "integer",
+            "description": "Tempo total em minutos"
+          },
+          "minimumPassingScore": {
+            "type": "number",
+            "format": "float",
+            "description": "Nota mínima para aprovação"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Status do exame"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          },
+          "course": {
+            "$ref": "#/components/schemas/Course",
+            "description": "Curso associado"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Subject",
+            "nullable": true,
+            "description": "Assunto associado"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "courseId",
+          "totalQuestions",
+          "totalTimeMinutes",
+          "minimumPassingScore",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ExamSession": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID da sessão"
+          },
+          "userId": {
+            "type": "integer",
+            "description": "ID do usuário"
+          },
+          "examId": {
+            "type": "integer",
+            "description": "ID do exame"
+          },
+          "courseId": {
+            "type": "integer",
+            "description": "ID do curso"
+          },
+          "subjectId": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID do assunto"
+          },
+          "questionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "nullable": true,
+            "description": "IDs das questões selecionadas"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data/hora de início"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Data/hora de finalização"
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Duração em segundos"
+          },
+          "totalCorrect": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Total de respostas corretas"
+          },
+          "totalWrong": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Total de respostas erradas"
+          },
+          "score": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "description": "Pontuação obtida"
+          },
+          "approved": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Se foi aprovado"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "examId",
+          "courseId",
+          "startedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ExamAnswer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID da resposta"
+          },
+          "examSessionId": {
+            "type": "integer",
+            "description": "ID da sessão"
+          },
+          "questionId": {
+            "type": "integer",
+            "description": "ID da questão"
+          },
+          "selectedOptionId": {
+            "type": "integer",
+            "description": "ID da opção selecionada"
+          },
+          "correctOptionId": {
+            "type": "integer",
+            "description": "ID da opção correta"
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "description": "Se a resposta está correta"
+          },
+          "responseTimeMilliseconds": {
+            "type": "integer",
+            "description": "Tempo de resposta em milissegundos"
+          },
+          "answeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data/hora da resposta"
+          }
+        },
+        "required": [
+          "id",
+          "examSessionId",
+          "questionId",
+          "selectedOptionId",
+          "correctOptionId",
+          "isCorrect",
+          "responseTimeMilliseconds",
+          "answeredAt"
+        ]
+      },
+      "ExamSessionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID da sessão"
+          },
+          "examId": {
+            "type": "integer",
+            "description": "ID do exame"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data/hora de início"
+          }
+        },
+        "required": [
+          "id",
+          "examId",
+          "startedAt"
+        ]
+      },
+      "ExamFinishResponse": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "format": "float",
+            "description": "Pontuação obtida"
+          },
+          "totalCorrect": {
+            "type": "integer",
+            "description": "Total de respostas corretas"
+          },
+          "totalWrong": {
+            "type": "integer",
+            "description": "Total de respostas erradas"
+          },
+          "approved": {
+            "type": "boolean",
+            "description": "Se foi aprovado"
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "description": "Duração em segundos"
+          }
+        },
+        "required": [
+          "score",
+          "totalCorrect",
+          "totalWrong",
+          "approved",
+          "durationSeconds"
+        ]
+      },
+      "ExamAnswerInput": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "description": "ID da questão"
+          },
+          "selectedOptionId": {
+            "type": "integer",
+            "description": "ID da opção selecionada"
+          },
+          "responseTimeMilliseconds": {
+            "type": "integer",
+            "description": "Tempo de resposta em milissegundos"
+          }
+        },
+        "required": [
+          "questionId",
+          "selectedOptionId",
+          "responseTimeMilliseconds"
+        ]
+      },
+      "StartExamDto": {
+        "type": "object",
+        "properties": {
+          "course_id": {
+            "type": "integer",
+            "description": "ID do curso"
+          },
+          "subject_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID da disciplina (opcional — se omitido, prova de todas as disciplinas do curso)"
+          }
+        },
+        "required": [
+          "course_id"
+        ]
+      },
+      "ExamPaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Exam"
+            },
+            "description": "Lista de exames"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "perPage": {
+                "type": "integer",
+                "description": "Registros por página"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Página atual"
+              }
+            },
+            "required": [
+              "total",
+              "perPage",
+              "page"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "ExamSessionPaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExamSession"
+            },
+            "description": "Lista de sessões"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "perPage": {
+                "type": "integer",
+                "description": "Registros por página"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Página atual"
+              }
+            },
+            "required": [
+              "total",
+              "perPage",
+              "page"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "ExamSessionDetailResponse": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/ExamSession",
+            "description": "Dados da sessão"
+          },
+          "exam": {
+            "$ref": "#/components/schemas/Exam",
+            "description": "Dados do exame"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExamAnswer"
+            },
+            "description": "Respostas da sessão"
+          }
+        },
+        "required": [
+          "session",
+          "exam",
+          "answers"
+        ]
+      },
+      "UserStatistic": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "ID do usuário"
+          },
+          "totalExams": {
+            "type": "integer",
+            "description": "Total de simulados realizados"
+          },
+          "totalCorrect": {
+            "type": "integer",
+            "description": "Total de respostas corretas"
+          },
+          "totalWrong": {
+            "type": "integer",
+            "description": "Total de respostas erradas"
+          },
+          "averageAccuracy": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "description": "Média de precisão"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "userId",
+          "totalExams",
+          "totalCorrect",
+          "totalWrong"
+        ]
+      },
+      "UserSubjectStatisticItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID do registro"
+          },
+          "userId": {
+            "type": "integer",
+            "description": "ID do usuário"
+          },
+          "subjectId": {
+            "type": "integer",
+            "description": "ID do assunto"
+          },
+          "totalExams": {
+            "type": "integer",
+            "description": "Total de simulados no assunto"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "description": "Total de questões respondidas"
+          },
+          "totalCorrect": {
+            "type": "integer",
+            "description": "Total de respostas corretas"
+          },
+          "accuracyPercentage": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "description": "Percentual de acerto"
+          },
+          "averageExamTimeSeconds": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "description": "Tempo médio por simulado em segundos"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Subject",
+            "description": "Assunto"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "subjectId",
+          "totalExams",
+          "totalQuestions",
+          "totalCorrect"
+        ]
+      },
+      "UserStatisticsResponse": {
+        "type": "object",
+        "properties": {
+          "overall": {
+            "$ref": "#/components/schemas/UserStatistic",
+            "nullable": true,
+            "description": "Estatísticas gerais do usuário"
+          },
+          "bySubject": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserSubjectStatisticItem"
+            },
+            "description": "Estatísticas por assunto"
+          }
+        },
+        "required": [
+          "overall",
+          "bySubject"
+        ]
+      },
+      "AdminCourseStatItem": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalExams": {
+                "type": "integer"
+              },
+              "averageAccuracy": {
+                "type": "number",
+                "format": "float"
+              },
+              "averageCompletionTime": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "totalExams",
+              "averageAccuracy",
+              "averageCompletionTime"
+            ]
+          }
+        },
+        "required": [
+          "course",
+          "stats"
+        ]
+      },
+      "AdminCourseStatDetail": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalExams": {
+                "type": "integer"
+              },
+              "averageAccuracy": {
+                "type": "number",
+                "format": "float"
+              },
+              "averageCompletionTime": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "totalExams",
+              "averageAccuracy",
+              "averageCompletionTime"
+            ]
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "$ref": "#/components/schemas/Subject"
+                },
+                "stats": {
+                  "type": "object",
+                  "properties": {
+                    "totalExams": {
+                      "type": "integer"
+                    },
+                    "averageAccuracy": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "averageCompletionTime": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "totalExams",
+                    "averageAccuracy",
+                    "averageCompletionTime"
+                  ]
+                }
+              },
+              "required": [
+                "subject",
+                "stats"
+              ]
+            }
+          }
+        },
+        "required": [
+          "course",
+          "stats",
+          "subjects"
+        ]
+      },
+      "AdminSubjectStatItem": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalExams": {
+                "type": "integer"
+              },
+              "averageAccuracy": {
+                "type": "number",
+                "format": "float"
+              },
+              "averageCompletionTime": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "totalExams",
+              "averageAccuracy",
+              "averageCompletionTime"
+            ]
+          }
+        },
+        "required": [
+          "subject",
+          "stats"
+        ]
+      },
+      "AdminQuestionStatItem": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "$ref": "#/components/schemas/Question"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalViews": {
+                "type": "integer"
+              },
+              "totalCorrect": {
+                "type": "integer"
+              },
+              "accuracyPercentage": {
+                "type": "number",
+                "format": "float"
+              },
+              "averageResponseTimeMilliseconds": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "totalViews",
+              "totalCorrect",
+              "accuracyPercentage",
+              "averageResponseTimeMilliseconds"
+            ]
+          }
+        },
+        "required": [
+          "question",
+          "stats"
+        ]
+      },
+      "AdminUserStatItem": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalExams": {
+                "type": "integer"
+              },
+              "totalCorrect": {
+                "type": "integer"
+              },
+              "totalWrong": {
+                "type": "integer"
+              },
+              "averageAccuracy": {
+                "type": "number",
+                "format": "float"
+              }
+            },
+            "required": [
+              "totalExams",
+              "totalCorrect",
+              "totalWrong",
+              "averageAccuracy"
+            ]
+          }
+        },
+        "required": [
+          "user",
+          "stats"
+        ]
+      },
+      "AdminUserStatDetail": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalExams": {
+                "type": "integer"
+              },
+              "totalCorrect": {
+                "type": "integer"
+              },
+              "totalWrong": {
+                "type": "integer"
+              },
+              "averageAccuracy": {
+                "type": "number",
+                "format": "float"
+              }
+            },
+            "required": [
+              "totalExams",
+              "totalCorrect",
+              "totalWrong",
+              "averageAccuracy"
+            ]
+          },
+          "bySubject": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "$ref": "#/components/schemas/Subject"
+                },
+                "stats": {
+                  "type": "object",
+                  "properties": {
+                    "totalExams": {
+                      "type": "integer"
+                    },
+                    "totalQuestions": {
+                      "type": "integer"
+                    },
+                    "totalCorrect": {
+                      "type": "integer"
+                    },
+                    "accuracyPercentage": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "averageExamTimeSeconds": {
+                      "type": "number",
+                      "format": "float"
+                    }
+                  },
+                  "required": [
+                    "totalExams",
+                    "totalQuestions",
+                    "totalCorrect",
+                    "accuracyPercentage",
+                    "averageExamTimeSeconds"
+                  ]
+                }
+              },
+              "required": [
+                "subject",
+                "stats"
+              ]
+            }
+          }
+        },
+        "required": [
+          "user",
+          "stats",
+          "bySubject"
+        ]
+      },
+      "PaginatedResponse": null
+    },
+    "responses": {
+      "ValidationErrorResponse": {
+        "description": "Erro de validação dos dados enviados",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "description": "Recurso não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "UnauthorizedResponse": {
+        "description": "Não autenticado — token ausente ou inválido",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnauthorizedError"
+            }
+          }
+        }
+      },
+      "ForbiddenResponse": {
+        "description": "Acesso negado — apenas administradores podem realizar esta ação",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ForbiddenError"
+            }
+          }
+        }
+      },
+      "SuccessResponse": {
+        "description": "Operação realizada com sucesso",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessMessage"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Cadastro de novo usuário",
+        "description": "Cria uma nova conta de usuário e retorna os dados do usuário com token de acesso.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "description": "Nome completo do usuário"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "E-mail do usuário"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Senha do usuário (mín. 8 caracteres)"
+                  },
+                  "passwordConfirmation": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Confirmação da senha (deve ser igual a password)"
+                  }
+                },
+                "required": [
+                  "fullName",
+                  "email",
+                  "password",
+                  "passwordConfirmation"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login de usuário",
+        "description": "Autentica um usuário existente e retorna os dados do usuário com token de acesso.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/account/profile": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Perfil do usuário logado",
+        "description": "Retorna os dados do usuário autenticado no momento.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do perfil do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/account/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout do usuário",
+        "description": "Invalida o token de acesso atual do usuário.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar usuários",
+        "description": "Retorna uma lista paginada de todos os usuários ativos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Criar usuário",
+        "description": "Cria um novo usuário com os dados fornecidos (requer autenticação).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Buscar usuário por ID",
+        "description": "Retorna os dados de um usuário específico.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Atualizar usuário",
+        "description": "Atualiza os dados de um usuário existente.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deletar usuário (soft delete)",
+        "description": "Marca um usuário como deletado sem remover os dados físicos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Listar cursos",
+        "description": "Retorna uma lista paginada de cursos ativos.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Busca por nome (case-insensitive)"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por código"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "description": "Filtrar por status"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "sortOrder"
+            },
+            "description": "Campo de ordenação"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Direção da ordenação"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de cursos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoursePaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Criar curso",
+        "description": "Cria um novo curso. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Curso criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/courses/{id}": {
+      "get": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Buscar curso por ID",
+        "description": "Retorna os dados de um curso específico.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do curso"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do curso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Atualizar curso",
+        "description": "Atualiza os dados de um curso existente. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do curso"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Curso atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Deletar curso (soft delete)",
+        "description": "Marca um curso como deletado. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do curso"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curso deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/subjects": {
+      "get": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Listar assuntos",
+        "description": "Retorna uma lista paginada de assuntos ativos.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Busca por nome (case-insensitive)"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "description": "Filtrar por status"
+          },
+          {
+            "name": "courseId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filtrar por ID do curso"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "sortOrder"
+            },
+            "description": "Campo de ordenação"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "description": "Direção da ordenação"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de assuntos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Criar assunto",
+        "description": "Cria um novo assunto. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubjectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assunto criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subject"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/subjects/{id}": {
+      "get": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Buscar assunto por ID",
+        "description": "Retorna os dados de um assunto específico.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do assunto"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do assunto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subject"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Atualizar assunto",
+        "description": "Atualiza os dados de um assunto existente. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do assunto"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubjectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assunto atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subject"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Deletar assunto (soft delete)",
+        "description": "Marca um assunto como deletado. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do assunto"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assunto deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/courses/{courseId}/subjects": {
+      "get": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Listar assuntos de um curso",
+        "description": "Retorna uma lista paginada de assuntos associados a um curso específico.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do curso"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de assuntos do curso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/questions": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Listar questões",
+        "description": "Retorna uma lista paginada de questões.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Busca pelo enunciado (case-insensitive)"
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "medium",
+                "hard"
+              ]
+            },
+            "description": "Filtrar por dificuldade"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "description": "Filtrar por status"
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filtrar por ID do assunto"
+          },
+          {
+            "name": "courseId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filtrar por ID do curso"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "created_at"
+            },
+            "description": "Campo de ordenação"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Direção da ordenação"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de questões",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Criar questão",
+        "description": "Cria uma nova questão. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Questão criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      }
+    },
+    "/questions/{id}": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Buscar questão por ID",
+        "description": "Retorna os dados de uma questão específica.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da questão"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados da questão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Atualizar questão",
+        "description": "Atualiza os dados de uma questão existente. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da questão"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Questão atualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Deletar questão (soft delete)",
+        "description": "Marca uma questão como deletada. Requer autenticação de administrador.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da questão"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questão deletada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/subjects/{subjectId}/questions": {
+      "get": {
+        "tags": [
+          "Subjects"
+        ],
+        "summary": "Listar questões de um assunto",
+        "description": "Retorna uma lista paginada de questões associadas a um assunto específico.",
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do assunto"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Quantidade de registros por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de questões do assunto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/exams/start": {
+      "post": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Iniciar simulado",
+        "description": "Inicia um novo simulado. Cria a prova dinamicamente com questões randomizadas seguindo a distribuição de dificuldade. Requer autenticação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartExamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sessão de simulado iniciada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "422": {
+            "description": "Erro de validação (course_id obrigatório ou course/subject não encontrado)"
+          }
+        }
+      }
+    },
+    "/exams/{id}/finish": {
+      "post": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Finalizar simulado",
+        "description": "Envia as respostas e finaliza a sessão. Calcula pontuação e aprovação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da sessão"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ExamAnswerInput"
+                    }
+                  }
+                },
+                "required": [
+                  "answers"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Simulado finalizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamFinishResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "422": {
+            "description": "Erro de validação (sessão já finalizada ou respostas incompletas)"
+          }
+        }
+      }
+    },
+    "/exams/history": {
+      "get": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Histórico de simulados",
+        "description": "Retorna o histórico de simulados do usuário autenticado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Histórico de simulados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamSessionPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/exams/{id}": {
+      "get": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Detalhes do simulado",
+        "description": "Retorna os detalhes completos de uma sessão de simulado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da sessão"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do simulado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamSessionDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/statistics/me": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Minhas estatísticas",
+        "description": "Retorna as estatísticas consolidadas do usuário autenticado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserStatisticsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/courses": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Estatísticas dos cursos",
+        "description": "Retorna lista paginada de estatísticas agregadas por curso. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de estatísticas por curso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AdminCourseStatItem"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "perPage": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "perPage",
+                        "page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/courses/{courseId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Detalhe de estatísticas do curso",
+        "description": "Retorna estatísticas de um curso específico com dados por disciplina. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas detalhadas do curso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCourseStatDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/subjects": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Estatísticas das disciplinas",
+        "description": "Retorna lista paginada de estatísticas agregadas por disciplina. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de estatísticas por disciplina",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AdminSubjectStatItem"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "perPage": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "perPage",
+                        "page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/subjects/{subjectId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Detalhe de estatísticas da disciplina",
+        "description": "Retorna estatísticas de uma disciplina específica. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas da disciplina",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSubjectStatItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/questions": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Estatísticas das questões",
+        "description": "Retorna lista paginada de estatísticas por questão. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "medium",
+                "hard"
+              ]
+            }
+          },
+          {
+            "name": "subjectId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de estatísticas por questão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AdminQuestionStatItem"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "perPage": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "perPage",
+                        "page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/questions/{questionId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Detalhe de estatísticas da questão",
+        "description": "Retorna estatísticas de uma questão específica. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "questionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas da questão",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminQuestionStatItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Estatísticas dos usuários",
+        "description": "Retorna lista paginada de estatísticas agregadas por usuário. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de estatísticas por usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AdminUserStatItem"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "perPage": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "perPage",
+                        "page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          }
+        }
+      }
+    },
+    "/admin/statistics/users/{userId}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Detalhe de estatísticas do usuário",
+        "description": "Retorna estatísticas de um usuário específico com dados por disciplina. Requer admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas detalhadas do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserStatDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
+    }
+  }
+}

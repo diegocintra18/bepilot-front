@@ -4,10 +4,12 @@ import AppIcon from './AppIcon.vue'
 
 <template>
   <section class="relative flex h-[600px] items-center overflow-hidden">
-    <div
-      class="absolute inset-0 bg-gradient-to-b from-primary-fixed-dim via-primary-fixed to-surface-container-low"
+    <img
+      src="/images/cockipit.webp"
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
       aria-hidden="true"
-    ></div>
+    >
     <div
       class="absolute -left-24 top-16 h-72 w-96 rounded-full bg-white/60 blur-3xl"
       aria-hidden="true"
@@ -60,7 +62,7 @@ import AppIcon from './AppIcon.vue'
 
       <div class="hidden items-center justify-end md:flex md:col-span-5">
         <div
-          class="flex h-80 w-80 flex-col items-center justify-center rounded-full border-2 border-primary/10 bg-white/90 p-stack-lg text-center shadow-xl backdrop-blur-md"
+          class="flex h-80 w-full max-w-md flex-col items-center justify-center rounded-xl border-2 border-primary/10 bg-white/90 p-stack-lg text-center shadow-xl backdrop-blur-md"
         >
           <AppIcon name="timer" :size="56" class="mb-2 text-primary" />
           <div class="font-label-caps text-label-caps mb-1 text-secondary">TEMPO REAL</div>

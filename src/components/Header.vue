@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import AppIcon from './AppIcon.vue'
+
+const router = useRouter()
+const auth = useAuthStore()
 
 const mobileOpen = ref(false)
 
@@ -10,6 +15,10 @@ const navLinks = [
   { label: 'Matérias', active: false },
   { label: 'Histórico', active: false },
 ]
+
+function goToAccount() {
+  router.push(auth.isAuthenticated ? { name: 'app' } : { name: 'login' })
+}
 </script>
 
 <template>
@@ -52,6 +61,7 @@ const navLinks = [
           type="button"
           class="cursor-pointer rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           aria-label="Minha conta"
+          @click="goToAccount"
         >
           <AppIcon name="user" :size="24" />
         </button>
