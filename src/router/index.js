@@ -27,6 +27,24 @@ const router = createRouter({
       component: () => import('@/views/DashboardView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/admin/courses',
+      name: 'courses',
+      component: () => import('@/views/admin/CoursesListView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/courses/new',
+      name: 'course-new',
+      component: () => import('@/views/admin/CourseFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/courses/:id/edit',
+      name: 'course-edit',
+      component: () => import('@/views/admin/CourseFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
   ],
 })
 
@@ -37,6 +55,9 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  if (to.meta.requiresAdmin && !auth.isAdmin) {
+    return { name: 'dashboard' }
   }
   if (to.meta.guestOnly && auth.isAuthenticated) {
     return { name: 'dashboard' }

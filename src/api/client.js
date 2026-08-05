@@ -10,6 +10,10 @@ export function configureAuth({ getToken: getter, onUnauthorized: handler }) {
   onUnauthorized = handler
 }
 
+export function unwrapData(body) {
+  return body?.data !== undefined ? body.data : body
+}
+
 function firstError(body) {
   return body?.message || body?.errors?.[0]?.message || ''
 }
@@ -29,6 +33,12 @@ function normalizeError(status, body) {
       kind: 'unauthorized',
       message: firstError(body) || 'Sua sessão expirou. Faça login novamente.',
     }
+  }
+  if (status === 403) {
+    return { kind: 'forbidden', message: firstError(body) || 'Você não tem permissão para esta ação.' }
+  }
+  if (status === 404) {
+    return { kind: 'notfound', message: firstError(body) || 'Registro não encontrado.' }
   }
   if (status >= 500) {
     return { kind: 'server', message: 'Ocorreu um erro no servidor. Tente novamente.' }
@@ -70,10 +80,12 @@ async function request(path, { method = 'GET', body, headers = {}, auth = false 
     throw error
   }
 
-  return data?.data !== undefined ? data.data : data
+  return data
 }
 
 export const api = {
   get: (path, options) => request(path, { ...options, method: 'GET' }),
   post: (path, body, options) => request(path, { ...options, method: 'POST', body }),
+  put: (path, body, options) => request(path, { ...options, method: 'PUT', body }),
+  delete: (path, options) => request(path, { ...options, method: 'DELETE' }),
 }

@@ -23,6 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
   let restorePromise = Promise.resolve()
 
   const isAuthenticated = computed(() => Boolean(token.value))
+  const isAdmin = computed(() => user.value?.userType === 2)
 
   function persistSession({ token: nextToken, user: nextUser }) {
     token.value = nextToken
@@ -94,6 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
     isRestoring,
     restorePromise,
     isAuthenticated,
+    isAdmin,
     signup,
     login,
     restoreSession,
