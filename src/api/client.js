@@ -70,7 +70,7 @@ async function request(path, { method = 'GET', body, headers = {}, auth = false 
     throw error
   }
 
-  return data
+  return data?.data !== undefined ? data.data : data
 }
 
 export const api = {
