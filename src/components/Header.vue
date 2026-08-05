@@ -17,7 +17,7 @@ const navLinks = [
 ]
 
 function goToAccount() {
-  router.push(auth.isAuthenticated ? { name: 'app' } : { name: 'login' })
+  router.push(auth.isAuthenticated ? { name: 'dashboard' } : { name: 'login' })
 }
 </script>
 

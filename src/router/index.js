@@ -22,9 +22,9 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
     {
-      path: '/app',
-      name: 'app',
-      component: () => import('@/views/AppView.vue'),
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/views/DashboardView.vue'),
       meta: { requiresAuth: true },
     },
   ],
@@ -39,7 +39,7 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
   if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { name: 'app' }
+    return { name: 'dashboard' }
   }
 })
 

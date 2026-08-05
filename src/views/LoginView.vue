@@ -51,8 +51,11 @@ async function submit() {
   loading.value = true
   try {
     await auth.login({ email: form.email, password: form.password })
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : 'app'
-    router.push({ name: redirect })
+    const redirect =
+      typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
+        ? route.query.redirect
+        : '/dashboard'
+    router.push(redirect)
   } catch (error) {
     if (error.kind === 'validation' && Array.isArray(error.fieldErrors)) {
       error.fieldErrors.forEach(({ field, message }) => {

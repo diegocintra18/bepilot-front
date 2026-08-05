@@ -48,11 +48,11 @@ Reusable primitives in `src/components/auth/`: `AuthLayout` (centered card + bra
 - **Why**: Reuse across login/register now and future auth screens; keeps views thin; matches the design-system-first approach already used for the landing page.
 - **Alternatives**: single monolithic form component (rejected — duplicated between login/register), duplicated markup in each view (rejected — violates user's reusability requirement).
 
-### D6: Base URL via env config
-Default base `https://api.vouserpiloto.com.br/api/v1`, overridable through `VITE_API_BASE_URL` in `.env` (a committed `.env.example` documents the variable). No request proxying in dev.
+### D6: Base URL via env config + Vite dev proxy
+Default base `https://api.vouserpiloto.com.br/api/v1`, overridable through `VITE_API_BASE_URL` in `.env` (a committed `.env.example` documents the variable). In development, `.env.development` sets `VITE_API_BASE_URL=/api/v1` and `vite.config.js` proxies `/api` to `https://api.vouserpiloto.com.br`, keeping requests same-origin so they bypass CORS (the API currently sends no `Access-Control-Allow-Origin` headers, which would otherwise block the browser).
 
-- **Why**: The production domain is the only reachable API; an env override keeps local/CI flexibility without code changes.
-- **Alternatives**: hardcoded constant (rejected — inflexible), Vite dev proxy (rejected — no local API host to proxy to).
+- **Why**: The API does not emit CORS headers, so cross-origin calls from the browser fail on the OPTIONS preflight. The dev proxy keeps local development working; production uses the absolute URL and therefore requires the API to enable CORS for the frontend origin.
+- **Alternatives**: hardcoded constant (rejected — inflexible), absolute URL in dev (rejected — blocked by missing CORS headers), axios with custom config (rejected — cannot solve server-side CORS).
 
 ## Risks / Trade-offs
 

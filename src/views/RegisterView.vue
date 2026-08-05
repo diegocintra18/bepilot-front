@@ -70,7 +70,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.signup({ ...form })
-    router.push({ name: 'app' })
+    router.push({ name: 'dashboard' })
   } catch (error) {
     if (error.kind === 'validation' && Array.isArray(error.fieldErrors)) {
       error.fieldErrors.forEach(({ field, message }) => {
