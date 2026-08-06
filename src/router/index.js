@@ -58,6 +58,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/statistics/courses/:courseId',
+      name: 'admin-course-stats',
+      component: () => import('@/views/AdminCourseStatsDetail.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/admin/courses/new',
       name: 'course-new',
       component: () => import('@/views/admin/CourseFormView.vue'),
