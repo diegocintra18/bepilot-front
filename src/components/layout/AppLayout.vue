@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { USER_TYPE_LABELS } from '@/constants/userTypes'
 import AppIcon from '@/components/AppIcon.vue'
 
 defineProps({
@@ -17,11 +18,9 @@ const auth = useAuthStore()
 const mobileOpen = ref(false)
 const loggingOut = ref(false)
 
-const userTypeLabels = { 1: 'Aluno', 2: 'Administrador' }
-
 const navItems = [
   { label: 'Home', icon: 'grid', to: { name: 'dashboard' } },
-  { label: 'Meus Cursos', icon: 'book', to: { name: 'courses' }, adminOnly: true },
+  { label: 'Gerenciar Cursos', icon: 'book', to: { name: 'courses' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer' },
   { label: 'Performance', icon: 'trending-up' },
   { label: 'Configurações', icon: 'settings' },
@@ -145,7 +144,7 @@ async function logout() {
                 {{ auth.user?.fullName }}
               </p>
               <p class="font-body-md text-sm leading-tight text-on-surface-variant">
-                {{ userTypeLabels[auth.user?.userType] || 'Usuário' }}
+                {{ USER_TYPE_LABELS[auth.user?.userType] || 'Usuário' }}
               </p>
             </div>
             <div

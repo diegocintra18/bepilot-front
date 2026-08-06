@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { authApi } from '@/api/auth'
+import { UserType } from '@/constants/userTypes'
 
 const STORAGE_KEY = 'bepilot.auth'
 
@@ -23,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   let restorePromise = Promise.resolve()
 
   const isAuthenticated = computed(() => Boolean(token.value))
-  const isAdmin = computed(() => user.value?.userType === 2)
+  const isAdmin = computed(() => user.value?.userType === UserType.Admin)
 
   function persistSession({ token: nextToken, user: nextUser }) {
     token.value = nextToken
