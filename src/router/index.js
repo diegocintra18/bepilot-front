@@ -45,6 +45,42 @@ const router = createRouter({
       component: () => import('@/views/admin/CourseFormView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
+    {
+      path: '/admin/subjects',
+      name: 'subjects',
+      component: () => import('@/views/admin/SubjectsListView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/subjects/new',
+      name: 'subject-new',
+      component: () => import('@/views/admin/SubjectFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/subjects/:id/edit',
+      name: 'subject-edit',
+      component: () => import('@/views/admin/SubjectFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/questions',
+      name: 'questions',
+      component: () => import('@/views/admin/QuestionsListView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/questions/new',
+      name: 'question-new',
+      component: () => import('@/views/admin/QuestionFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/questions/:id/edit',
+      name: 'question-edit',
+      component: () => import('@/views/admin/QuestionFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
   ],
 })
 

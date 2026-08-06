@@ -21,6 +21,8 @@ const loggingOut = ref(false)
 const navItems = [
   { label: 'Home', icon: 'grid', to: { name: 'dashboard' } },
   { label: 'Gerenciar Cursos', icon: 'book', to: { name: 'courses' }, adminOnly: true },
+  { label: 'Gerenciar Assuntos', icon: 'layers', to: { name: 'subjects' }, adminOnly: true },
+  { label: 'Gerenciar Questões', icon: 'list', to: { name: 'questions' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer' },
   { label: 'Performance', icon: 'trending-up' },
   { label: 'Configurações', icon: 'settings' },

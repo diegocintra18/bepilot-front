@@ -141,6 +141,14 @@ const icons = {
     inner: '<polyline points="9 18 15 12 9 6"/>',
     filled: false,
   },
+  layers: {
+    inner: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    filled: false,
+  },
+  list: {
+    inner: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+    filled: false,
+  },
 }
 
 const current = computed(() => icons[props.name])

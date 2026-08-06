@@ -4,10 +4,17 @@ import { coursesApi } from '@/api/courses'
 
 export const useCoursesStore = defineStore('courses', () => {
   const courses = ref([])
+  const allCourses = ref([])
   const meta = ref({ total: 0, perPage: 10, currentPage: 1, lastPage: 1 })
   const filters = ref({ page: 1, limit: 10, search: '', status: '', sort: 'sortOrder', order: 'asc' })
   const loading = ref(false)
   const error = ref('')
+
+  async function fetchAllCourses() {
+    const result = await coursesApi.list({ limit: 100, sort: 'sortOrder', order: 'asc' })
+    allCourses.value = result.data
+    return allCourses.value
+  }
 
   async function fetchCourses() {
     loading.value = true
@@ -58,11 +65,13 @@ export const useCoursesStore = defineStore('courses', () => {
 
   return {
     courses,
+    allCourses,
     meta,
     filters,
     loading,
     error,
     fetchCourses,
+    fetchAllCourses,
     setSearch,
     setStatus,
     goToPage,
