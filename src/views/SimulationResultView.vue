@@ -14,6 +14,7 @@ const store = useSimulationStore()
 
 const sessionId = computed(() => Number(route.params.id))
 const loading = ref(true)
+const loadFailed = ref(false)
 
 const result = computed(() => store.result)
 const review = computed(() => store.review)
@@ -106,7 +107,7 @@ onMounted(async () => {
       return
     }
   } catch {
-    // store.error exibe a mensagem
+    loadFailed.value = true
   } finally {
     loading.value = false
   }
@@ -151,7 +152,7 @@ onMounted(async () => {
         </div>
       </section>
 
-      <ValidationMessages :message="store.error" />
+      <ValidationMessages v-if="loadFailed" :message="store.error" />
 
       <section
         class="flex flex-col items-center justify-between gap-6 rounded-xl border p-6 md:flex-row md:p-8"

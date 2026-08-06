@@ -16,6 +16,7 @@ const store = useSimulationStore()
 
 const sessionId = computed(() => Number(route.params.id))
 const loading = ref(true)
+const loadFailed = ref(false)
 const submitting = ref(false)
 const navigatorOpen = ref(false)
 const confirmSubmitOpen = ref(false)
@@ -73,15 +74,18 @@ function handleBeforeUnload(event) {
 }
 
 function handleSelect(optionId) {
+  if (submitting.value) return
   const question = store.currentQuestion
   if (question) store.selectAnswer(question.id, optionId)
 }
 
 function goPrevious() {
+  if (submitting.value) return
   store.goToQuestion(store.currentIndex - 1)
 }
 
 function goNext() {
+  if (submitting.value) return
   store.goToQuestion(store.currentIndex + 1)
 }
 
@@ -124,12 +128,14 @@ function confirmLeave() {
 }
 
 function retryLoad() {
+  loadFailed.value = false
   loading.value = true
   store.error = ''
   loadSession()
 }
 
 async function loadSession() {
+  loadFailed.value = false
   try {
     if (store.status !== 'in_progress' || store.session?.id !== sessionId.value) {
       const { action } = await store.resumeSession(sessionId.value)
@@ -140,6 +146,8 @@ async function loadSession() {
       }
     }
     startTicking()
+  } catch {
+    loadFailed.value = true
   } finally {
     loading.value = false
   }
@@ -177,7 +185,7 @@ onBeforeRouteLeave((to, from, next) => {
       />
     </div>
 
-    <div v-else-if="store.status !== 'in_progress'">
+    <div v-else-if="loadFailed">
       <ValidationMessages :message="store.error || 'Não foi possível carregar o simulado.'" class="mb-stack-md" />
       <button
         type="button"
@@ -232,7 +240,7 @@ onBeforeRouteLeave((to, from, next) => {
             :questions="store.questions"
             :answers="store.answers"
             :current-index="store.currentIndex"
-            @select="(index) => store.goToQuestion(index)"
+            @select="(index) => !submitting && store.goToQuestion(index)"
           />
         </section>
       </div>
@@ -261,7 +269,7 @@ onBeforeRouteLeave((to, from, next) => {
           <div class="flex items-center justify-between gap-4">
             <button
               type="button"
-              :disabled="store.currentIndex <= 0"
+              :disabled="submitting || store.currentIndex <= 0"
               class="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
               @click="goPrevious"
             >
@@ -281,7 +289,7 @@ onBeforeRouteLeave((to, from, next) => {
 
             <button
               type="button"
-              :disabled="store.currentIndex >= store.totalQuestions - 1"
+              :disabled="submitting || store.currentIndex >= store.totalQuestions - 1"
               class="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
               @click="goNext"
             >
@@ -305,7 +313,7 @@ onBeforeRouteLeave((to, from, next) => {
             :questions="store.questions"
             :answers="store.answers"
             :current-index="store.currentIndex"
-            @select="(index) => store.goToQuestion(index)"
+            @select="(index) => !submitting && store.goToQuestion(index)"
           />
           <p class="mt-stack-md border-t border-outline-variant pt-stack-md font-body-md text-xs text-on-surface-variant">
             As respostas são salvas automaticamente.
