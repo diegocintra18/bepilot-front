@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   open: {
     type: Boolean,
     required: true,
@@ -20,9 +22,23 @@ defineProps({
     type: String,
     default: 'Confirmar',
   },
+  cancelLabel: {
+    type: String,
+    default: 'Cancelar',
+  },
+  variant: {
+    type: String,
+    default: 'danger',
+  },
 })
 
 const emit = defineEmits(['cancel', 'confirm'])
+
+const confirmClasses = computed(() =>
+  props.variant === 'primary'
+    ? 'bg-primary hover:bg-primary-container text-on-primary'
+    : 'bg-error hover:bg-error/90 text-on-error',
+)
 </script>
 
 <template>
@@ -51,11 +67,12 @@ const emit = defineEmits(['cancel', 'confirm'])
               :disabled="loading"
               @click="emit('cancel')"
             >
-              Cancelar
+              {{ cancelLabel }}
             </button>
             <button
               type="button"
-              class="flex items-center gap-2 rounded-lg bg-error px-4 py-2 font-button-text text-button-text font-bold text-on-error transition-colors hover:bg-error/90 disabled:cursor-not-allowed disabled:opacity-60"
+              class="flex items-center gap-2 rounded-lg px-4 py-2 font-button-text text-button-text font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              :class="confirmClasses"
               :disabled="loading"
               @click="emit('confirm')"
             >

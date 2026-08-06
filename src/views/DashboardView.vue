@@ -1,10 +1,18 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { examsApi } from '@/api/exams'
+import { formatDate, formatDuration } from '@/utils/format'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 
 const auth = useAuthStore()
+const router = useRouter()
+
+const recentSimulations = ref([])
+const recentLoading = ref(false)
+const recentError = ref('')
 
 const firstName = computed(() => auth.user?.fullName?.split(' ')[0] || 'Piloto')
 
@@ -30,29 +38,49 @@ const topics = [
   { title: 'Regras de Tráfego VFR', pct: 55, fill: 'bg-secondary-fixed-dim', label: 'text-secondary' },
 ]
 
-const simulations = [
-  {
-    title: 'Simulado PPA #242',
-    meta: '60 questões • 1h 20m',
-    date: '14 Out, 2024',
-    result: 'APROVADO (88%)',
-    pass: true,
-  },
-  {
-    title: 'Meteorologia Avançada',
-    meta: '20 questões • 25m',
-    date: '12 Out, 2024',
-    result: 'REPROVADO (65%)',
-    pass: false,
-  },
-  {
-    title: 'Simulado PPA #241',
-    meta: '60 questões • 1h 45m',
-    date: '10 Out, 2024',
-    result: 'APROVADO (78%)',
-    pass: true,
-  },
-]
+function titleOf(item) {
+  if (item.exam?.name) return item.exam.name
+  if (item.subject?.name) return item.subject.name
+  return `Simulado #${item.id}`
+}
+
+function metaOf(item) {
+  const parts = []
+  const totalQuestions = item.exam?.totalQuestions
+  if (totalQuestions != null) parts.push(`${totalQuestions} questões`)
+  const minutes = item.exam?.totalTimeMinutes
+  if (minutes != null) {
+    parts.push(formatDuration(minutes * 60))
+  } else if (item.durationSeconds != null) {
+    parts.push(formatDuration(item.durationSeconds))
+  }
+  return parts.length ? parts.join(' • ') : ''
+}
+
+function resultLabel(item) {
+  if (item.approved == null) return { text: 'Em andamento', pass: null }
+  return { text: item.approved ? 'APROVADO' : 'REPROVADO', pass: item.approved }
+}
+
+function openSimulation(item) {
+  const name = item.approved == null ? 'simulation-execution' : 'simulation-result'
+  router.push({ name, params: { id: item.id } })
+}
+
+async function loadRecentSimulations() {
+  recentLoading.value = true
+  recentError.value = ''
+  try {
+    const result = await examsApi.history({ page: 1, limit: 5 })
+    recentSimulations.value = result.data || []
+  } catch (err) {
+    recentError.value = err.message || 'Não foi possível carregar os simulados recentes.'
+  } finally {
+    recentLoading.value = false
+  }
+}
+
+onMounted(loadRecentSimulations)
 </script>
 
 <template>
@@ -75,6 +103,7 @@ const simulations = [
           <button
             type="button"
             class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 font-button-text text-button-text text-on-primary transition-all hover:bg-primary-container"
+            @click="router.push({ name: 'simulation-start' })"
           >
             <AppIcon name="rocket" :size="20" />
             Novo PPA Exam
@@ -209,7 +238,11 @@ const simulations = [
         >
           <div class="mb-6 flex items-center justify-between">
             <h3 class="font-headline-md text-headline-md text-on-surface">Simulados Recentes</h3>
-            <button type="button" class="font-button-text text-sm text-primary-container">
+            <button
+              type="button"
+              class="font-button-text text-sm text-primary-container"
+              @click="router.push({ name: 'simulation-history' })"
+            >
               Ver Histórico
             </button>
           </div>
@@ -224,33 +257,52 @@ const simulations = [
                 </tr>
               </thead>
               <tbody class="font-body-md">
+                <tr v-if="recentLoading">
+                  <td colspan="4" class="px-2 py-10 text-center">
+                    <span
+                      class="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
+                      role="status"
+                      aria-label="Carregando"
+                    />
+                  </td>
+                </tr>
+                <tr v-else-if="recentSimulations.length === 0">
+                  <td colspan="4" class="px-2 py-10 text-center">
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                      {{ recentError || 'Nenhum simulado realizado ainda.' }}
+                    </p>
+                  </td>
+                </tr>
                 <tr
-                  v-for="sim in simulations"
-                  :key="sim.title"
+                  v-for="sim in recentSimulations"
+                  :key="sim.id"
                   class="border-b border-surface-container transition-colors last:border-0 hover:bg-surface-container-low"
                 >
                   <td class="px-2 py-4">
-                    <p class="font-bold text-on-surface">{{ sim.title }}</p>
-                    <p class="text-xs text-on-surface-variant">{{ sim.meta }}</p>
+                    <p class="font-bold text-on-surface">{{ titleOf(sim) }}</p>
+                    <p v-if="metaOf(sim)" class="text-xs text-on-surface-variant">{{ metaOf(sim) }}</p>
                   </td>
-                  <td class="px-2 py-4 text-sm text-on-surface-variant">{{ sim.date }}</td>
+                  <td class="px-2 py-4 text-sm text-on-surface-variant">{{ formatDate(sim.startedAt) }}</td>
                   <td class="px-2 py-4">
                     <span
                       class="rounded-full px-2.5 py-1 text-xs font-bold"
                       :class="
-                        sim.pass
-                          ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
-                          : 'bg-error-container text-on-error-container'
+                        resultLabel(sim).pass === null
+                          ? 'bg-surface-container text-on-surface-variant'
+                          : resultLabel(sim).pass
+                            ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                            : 'bg-error-container text-on-error-container'
                       "
                     >
-                      {{ sim.result }}
+                      {{ resultLabel(sim).text }}
                     </span>
                   </td>
                   <td class="px-2 py-4 text-right">
                     <button
                       type="button"
                       class="p-2 text-on-surface-variant transition-colors hover:text-primary"
-                      :aria-label="`Ver detalhes de ${sim.title}`"
+                      :aria-label="`Ver detalhes de ${titleOf(sim)}`"
+                      @click="openSimulation(sim)"
                     >
                       <AppIcon name="eye" :size="18" />
                     </button>

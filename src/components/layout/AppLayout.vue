@@ -23,7 +23,7 @@ const navItems = [
   { label: 'Gerenciar Cursos', icon: 'book', to: { name: 'courses' }, adminOnly: true },
   { label: 'Gerenciar Assuntos', icon: 'layers', to: { name: 'subjects' }, adminOnly: true },
   { label: 'Gerenciar Questões', icon: 'list', to: { name: 'questions' }, adminOnly: true },
-  { label: 'Simulados', icon: 'timer' },
+  { label: 'Simulados', icon: 'timer', to: { name: 'simulation-history' } },
   { label: 'Performance', icon: 'trending-up' },
   { label: 'Configurações', icon: 'settings' },
 ]
@@ -96,6 +96,7 @@ async function logout() {
         <button
           type="button"
           class="flex w-full items-center justify-center gap-2 rounded-xl bg-secondary-container py-3 font-button-text text-button-text text-on-secondary-container transition-all hover:opacity-90"
+          @click="router.push({ name: 'simulation-start' })"
         >
           <AppIcon name="plus-circle" :size="20" />
           Iniciar Simulado

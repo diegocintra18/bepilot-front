@@ -28,6 +28,30 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/simulados/historico',
+      name: 'simulation-history',
+      component: () => import('@/views/SimulationHistoryView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/simulados/iniciar',
+      name: 'simulation-start',
+      component: () => import('@/views/SimulationStartView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/simulados/:id',
+      name: 'simulation-execution',
+      component: () => import('@/views/SimulationExecutionView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/simulados/:id/resultado',
+      name: 'simulation-result',
+      component: () => import('@/views/SimulationResultView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/admin/courses',
       name: 'courses',
       component: () => import('@/views/admin/CoursesListView.vue'),
