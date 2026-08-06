@@ -137,7 +137,7 @@ async function logout() {
           >
             <AppIcon :name="mobileOpen ? 'close' : 'menu'" :size="24" />
           </button>
-          <h1 class="font-headline-md text-headline-md font-bold text-primary">{{ title }}</h1>
+          <h1 class="font-headline-md text-body-lg font-bold text-primary md:text-headline-md">{{ title }}</h1>
         </div>
 
         <div class="flex items-center gap-6">
