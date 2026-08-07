@@ -27,6 +27,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => Boolean(token.value))
   const isAdmin = computed(() => user.value?.userType === UserType.Admin)
+  const subscriptionActive = computed(() => {
+    const status = subscription.value?.subscriptionStatus ?? user.value?.subscriptionStatus
+    return status === 'active'
+  })
+  const needsSubscription = computed(
+    () => isAuthenticated.value && !isAdmin.value && !subscriptionActive.value,
+  )
 
   function persistSession({ token: nextToken, user: nextUser }) {
     token.value = nextToken
@@ -137,6 +144,8 @@ export const useAuthStore = defineStore('auth', () => {
     restorePromise,
     isAuthenticated,
     isAdmin,
+    subscriptionActive,
+    needsSubscription,
     signup,
     login,
     updateProfile,

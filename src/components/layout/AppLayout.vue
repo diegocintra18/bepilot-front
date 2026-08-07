@@ -1,9 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from '@/components/AppIcon.vue'
 import UserMenu from '@/components/layout/UserMenu.vue'
+import SubscriptionAlert from '@/components/layout/SubscriptionAlert.vue'
 
 defineProps({
   title: {
@@ -17,6 +18,12 @@ const router = useRouter()
 const auth = useAuthStore()
 const mobileOpen = ref(false)
 const loggingOut = ref(false)
+
+onMounted(() => {
+  if (auth.isAuthenticated && !auth.isAdmin && !auth.subscription) {
+    auth.fetchSubscription().catch(() => {})
+  }
+})
 
 const navItems = [
   { label: 'Home', icon: 'grid', to: { name: 'dashboard' } },
@@ -102,10 +109,7 @@ async function logout() {
             class="flex items-center gap-3 rounded-xl px-4 py-2 text-on-surface-variant transition-colors hover:bg-surface-variant"
           >
             <AppIcon name="help-circle" :size="20" />
-            <span class="flex flex-col leading-tight">
-              <span class="font-button-text text-button-text">Suporte</span>
-              <span class="font-body-md text-sm">(16) 99135-3306</span>
-            </span>
+            <span class="font-button-text text-button-text">Suporte</span>
           </a>
           <button
             type="button"
@@ -149,6 +153,8 @@ async function logout() {
           </button>
         </div>
       </header>
+
+      <SubscriptionAlert />
 
       <div class="flex-1 overflow-y-auto overscroll-y-contain overflow-x-hidden p-margin-mobile md:p-12 [-webkit-overflow-scrolling:touch]">
         <div class="mx-auto w-full max-w-container-max-width">
