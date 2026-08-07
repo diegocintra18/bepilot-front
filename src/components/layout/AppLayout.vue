@@ -96,11 +96,16 @@ async function logout() {
         </button>
         <div class="space-y-1 border-t border-outline-variant pt-4">
           <a
-            href="#"
+            href="https://wa.me/5516991353306"
+            target="_blank"
+            rel="noopener noreferrer"
             class="flex items-center gap-3 rounded-xl px-4 py-2 text-on-surface-variant transition-colors hover:bg-surface-variant"
           >
             <AppIcon name="help-circle" :size="20" />
-            <span class="font-button-text text-button-text">Suporte</span>
+            <span class="flex flex-col leading-tight">
+              <span class="font-button-text text-button-text">Suporte</span>
+              <span class="font-body-md text-sm">(16) 99135-3306</span>
+            </span>
           </a>
           <button
             type="button"

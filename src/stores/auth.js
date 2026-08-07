@@ -21,6 +21,8 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(null)
   const user = ref(null)
   const isRestoring = ref(true)
+  const subscription = ref(null)
+  const subscriptionLoading = ref(false)
   let restorePromise = Promise.resolve()
 
   const isAuthenticated = computed(() => Boolean(token.value))
@@ -43,9 +45,34 @@ export const useAuthStore = defineStore('auth', () => {
     return authApi.changePassword(payload)
   }
 
+  async function fetchSubscription() {
+    subscriptionLoading.value = true
+    try {
+      subscription.value = await authApi.fetchSubscription()
+      return subscription.value
+    } finally {
+      subscriptionLoading.value = false
+    }
+  }
+
+  async function cancelSubscription(reason) {
+    const result = await authApi.cancelSubscription({ reason })
+    try {
+      subscription.value = await authApi.fetchSubscription()
+    } catch {
+      // best-effort: o status é refletido no retorno do cancelamento
+    }
+    if (user.value) {
+      user.value = { ...user.value, subscriptionStatus: subscription.value?.subscriptionStatus ?? user.value.subscriptionStatus }
+      writeStoredSession(token.value, user.value)
+    }
+    return result
+  }
+
   function clearSession() {
     token.value = null
     user.value = null
+    subscription.value = null
     localStorage.removeItem(STORAGE_KEY)
   }
 
@@ -104,6 +131,8 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     token,
     user,
+    subscription,
+    subscriptionLoading,
     isRestoring,
     restorePromise,
     isAuthenticated,
@@ -112,6 +141,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     updateProfile,
     changePassword,
+    fetchSubscription,
+    cancelSubscription,
     restoreSession,
     logout,
     clearSession,

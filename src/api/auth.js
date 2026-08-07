@@ -11,10 +11,16 @@ export const authApi = {
     return api.get('/account/profile', { auth: true }).then(unwrapData)
   },
   updateProfile(payload) {
-    return api.patch('/account/profile', payload, { auth: true }).then(unwrapData)
+    return api.put('/me', payload, { auth: true }).then(unwrapData)
   },
   changePassword(payload) {
-    return api.post('/account/change-password', payload, { auth: true }).then(unwrapData)
+    return api.put('/me/password', payload, { auth: true }).then(unwrapData)
+  },
+  fetchSubscription() {
+    return api.get('/me/subscription', { auth: true }).then(unwrapData)
+  },
+  cancelSubscription(payload) {
+    return api.post('/subscriptions/cancel', payload, { auth: true }).then(unwrapData)
   },
   logout() {
     return api.post('/account/logout', null, { auth: true })

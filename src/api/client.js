@@ -37,6 +37,9 @@ function normalizeError(status, body) {
   if (status === 403) {
     return { kind: 'forbidden', message: firstError(body) || 'Você não tem permissão para esta ação.' }
   }
+  if (status === 402) {
+    return { kind: 'payment_required', message: firstError(body) || 'Seu limite de simulados gratuitos foi atingido.' }
+  }
   if (status === 404) {
     return { kind: 'notfound', message: firstError(body) || 'Registro não encontrado.' }
   }

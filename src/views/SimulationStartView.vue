@@ -4,15 +4,19 @@ import { useRouter } from 'vue-router'
 import { useSimulationStore } from '@/stores/simulation'
 import { useCoursesStore } from '@/stores/courses'
 import { useSubjectsStore } from '@/stores/subjects'
+import { useAuthStore } from '@/stores/auth'
 import { SimulationType, SIMULATION_TYPE_OPTIONS } from '@/constants/simulations'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
+const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
+
 const router = useRouter()
 const simulation = useSimulationStore()
 const coursesStore = useCoursesStore()
 const subjectsStore = useSubjectsStore()
+const auth = useAuthStore()
 
 const courseId = ref('')
 const simulationType = ref(SimulationType.Complete)
@@ -29,10 +33,18 @@ const courseSubjects = computed(() =>
   ),
 )
 
+const subscription = computed(() => auth.subscription)
+const remaining = computed(() => subscription.value?.freeSimulationsRemaining ?? null)
+const subscriptionBlocked = computed(() => {
+  if (subscription.value?.subscriptionStatus === 'active') return false
+  return remaining.value !== null && remaining.value <= 0
+})
+
 const canStart = computed(
   () =>
     courseId.value !== '' &&
-    (simulationType.value === SimulationType.Complete || subjectId.value !== ''),
+    (simulationType.value === SimulationType.Complete || subjectId.value !== '') &&
+    !subscriptionBlocked.value,
 )
 
 const selectedType = computed(() =>
@@ -46,6 +58,10 @@ function chooseType(value) {
   }
 }
 
+function redirectToCheckout() {
+  window.location.assign(KIWIFY_CHECKOUT_URL)
+}
+
 async function start() {
   if (!canStart.value || loading.value) return
   loading.value = true
@@ -55,7 +71,11 @@ async function start() {
       subjectId: simulationType.value === SimulationType.Subject ? Number(subjectId.value) : null,
     })
     router.push({ name: 'simulation-execution', params: { id: sessionId } })
-  } catch {
+  } catch (error) {
+    if (error.kind === 'payment_required') {
+      redirectToCheckout()
+      return
+    }
     // store.error já exibe a mensagem
   } finally {
     loading.value = false
@@ -67,6 +87,11 @@ onMounted(async () => {
     await Promise.all([coursesStore.fetchAllCourses(), subjectsStore.fetchAllSubjects()])
   } catch {
     // dropdowns opcionais; o usuário pode tentar novamente
+  }
+  try {
+    await auth.fetchSubscription()
+  } catch {
+    // limite de simulados não pôde ser carregado; a API ainda valida ao iniciar
   }
 })
 </script>
@@ -86,6 +111,41 @@ onMounted(async () => {
       <section
         class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift md:p-8"
       >
+        <div
+          v-if="subscriptionBlocked"
+          class="mb-stack-lg flex flex-col items-start justify-between gap-4 rounded-xl border border-error bg-error-container p-5 sm:flex-row sm:items-center"
+        >
+          <div class="flex items-start gap-3">
+            <AppIcon name="info" class="mt-0.5 shrink-0 text-on-error-container" :size="22" />
+            <div>
+              <p class="font-button-text text-button-text font-bold text-on-error-container">
+                Você atingiu o limite de simulados gratuitos
+              </p>
+              <p class="font-body-md text-body-md text-on-error-container">
+                Ative sua assinatura para continuar praticando sem limites.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="shrink-0 rounded-lg bg-error px-5 py-2.5 font-button-text text-button-text font-bold text-on-error transition-colors hover:bg-error/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error"
+            @click="redirectToCheckout"
+          >
+            Ativar assinatura
+          </button>
+        </div>
+
+        <p
+          v-else-if="remaining !== null && remaining > 0"
+          class="mb-stack-lg flex items-center gap-2 rounded-lg bg-surface-container-low px-4 py-3 font-body-md text-body-md text-on-surface-variant"
+        >
+          <AppIcon name="timer" class="shrink-0 text-primary" :size="18" />
+          Você tem
+          <span class="font-bold text-on-surface">{{ remaining }}</span>
+          simulado{{ remaining === 1 ? '' : 's' }} gratuito{{ remaining === 1 ? '' : 's' }}
+          restante{{ remaining === 1 ? '' : 's' }}.
+        </p>
+
         <form class="space-y-stack-lg" @submit.prevent="start">
           <div>
             <label for="course" class="mb-2 block font-label-caps text-label-caps uppercase text-on-surface-variant">

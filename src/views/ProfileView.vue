@@ -15,8 +15,9 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const profile = reactive({
   fullName: auth.user?.fullName || '',
   email: auth.user?.email || '',
+  whatsapp: auth.user?.whatsapp || '',
 })
-const profileErrors = reactive({ fullName: '', email: '' })
+const profileErrors = reactive({ fullName: '', email: '', whatsapp: '' })
 const profileApiError = ref('')
 const profileSuccess = ref('')
 const savingProfile = ref(false)
@@ -24,12 +25,12 @@ const savingProfile = ref(false)
 const password = reactive({
   currentPassword: '',
   newPassword: '',
-  passwordConfirmation: '',
+  confirmation: '',
 })
 const passwordErrors = reactive({
   currentPassword: '',
   newPassword: '',
-  passwordConfirmation: '',
+  confirmation: '',
 })
 const passwordApiError = ref('')
 const passwordSuccess = ref('')
@@ -49,6 +50,7 @@ function applyFieldErrors(errors, target) {
 function validateProfile() {
   profileErrors.fullName = ''
   profileErrors.email = ''
+  profileErrors.whatsapp = ''
   let valid = true
   if (!profile.fullName.trim()) {
     profileErrors.fullName = 'Informe seu nome completo.'
@@ -61,6 +63,10 @@ function validateProfile() {
     profileErrors.email = 'Informe um e-mail válido.'
     valid = false
   }
+  if (profile.whatsapp.trim().length > 30) {
+    profileErrors.whatsapp = 'O número deve ter no máximo 30 caracteres.'
+    valid = false
+  }
   return valid
 }
 
@@ -71,7 +77,11 @@ async function saveProfile() {
 
   savingProfile.value = true
   try {
-    await auth.updateProfile({ fullName: profile.fullName.trim(), email: profile.email })
+    await auth.updateProfile({
+      fullName: profile.fullName.trim(),
+      email: profile.email,
+      whatsapp: profile.whatsapp.trim() || null,
+    })
     profileSuccess.value = 'Perfil atualizado com sucesso.'
   } catch (error) {
     if (error.kind === 'validation') applyFieldErrors(error.fieldErrors, profileErrors)
@@ -84,7 +94,7 @@ async function saveProfile() {
 function validatePassword() {
   passwordErrors.currentPassword = ''
   passwordErrors.newPassword = ''
-  passwordErrors.passwordConfirmation = ''
+  passwordErrors.confirmation = ''
   let valid = true
   if (!password.currentPassword) {
     passwordErrors.currentPassword = 'Informe sua senha atual.'
@@ -97,11 +107,11 @@ function validatePassword() {
     passwordErrors.newPassword = 'A nova senha deve ter no mínimo 8 caracteres.'
     valid = false
   }
-  if (!password.passwordConfirmation) {
-    passwordErrors.passwordConfirmation = 'Confirme a nova senha.'
+  if (!password.confirmation) {
+    passwordErrors.confirmation = 'Confirme a nova senha.'
     valid = false
-  } else if (password.passwordConfirmation !== password.newPassword) {
-    passwordErrors.passwordConfirmation = 'As senhas não coincidem.'
+  } else if (password.confirmation !== password.newPassword) {
+    passwordErrors.confirmation = 'As senhas não coincidem.'
     valid = false
   }
   return valid
@@ -117,7 +127,7 @@ async function changePassword() {
     await auth.changePassword({ ...password })
     password.currentPassword = ''
     password.newPassword = ''
-    password.passwordConfirmation = ''
+    password.confirmation = ''
     passwordSuccess.value = 'Senha alterada com sucesso.'
   } catch (error) {
     if (error.kind === 'validation') applyFieldErrors(error.fieldErrors, passwordErrors)
@@ -151,7 +161,7 @@ async function changePassword() {
             </div>
             <div>
               <h3 class="font-headline-md text-headline-md text-on-surface">Dados pessoais</h3>
-              <p class="text-sm text-on-surface-variant">Atualize seu nome e e-mail de acesso.</p>
+              <p class="text-sm text-on-surface-variant">Atualize seu nome, e-mail e WhatsApp.</p>
             </div>
           </div>
 
@@ -189,6 +199,23 @@ async function changePassword() {
                     type="email"
                     name="email"
                     autocomplete="email"
+                    :aria-describedby="error ? `${id}-error` : undefined"
+                    class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                  />
+                </template>
+              </FormField>
+
+              <FormField :error="profileErrors.whatsapp" label="WhatsApp" name="whatsapp">
+                <template #default="{ id, error }">
+                  <input
+                    :id="id"
+                    v-model="profile.whatsapp"
+                    type="tel"
+                    name="whatsapp"
+                    autocomplete="tel"
+                    inputmode="tel"
+                    maxlength="30"
+                    placeholder="(00) 00000-0000"
                     :aria-describedby="error ? `${id}-error` : undefined"
                     class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                   />
@@ -252,12 +279,12 @@ async function changePassword() {
                 </template>
               </FormField>
 
-              <FormField :error="passwordErrors.passwordConfirmation" label="Confirmar nova senha" name="passwordConfirmation">
+              <FormField :error="passwordErrors.confirmation" label="Confirmar nova senha" name="confirmation">
                 <template #default="{ id, error }">
                   <PasswordInput
                     :id="id"
-                    v-model="password.passwordConfirmation"
-                    name="passwordConfirmation"
+                    v-model="password.confirmation"
+                    name="confirmation"
                     autocomplete="new-password"
                     placeholder="Repita a nova senha"
                     :aria-describedby="error ? `${id}-error` : undefined"

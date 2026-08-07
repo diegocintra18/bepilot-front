@@ -118,6 +118,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/assinatura',
+      name: 'subscription',
+      component: () => import('@/views/SubscriptionView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: { name: 'home' },
     },

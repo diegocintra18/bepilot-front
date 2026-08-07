@@ -29,6 +29,11 @@ function goToProfile() {
   router.push({ name: 'profile' })
 }
 
+function goToSubscription() {
+  open.value = false
+  router.push({ name: 'subscription' })
+}
+
 async function logout() {
   if (loggingOut.value) return
   loggingOut.value = true
@@ -107,6 +112,15 @@ onBeforeUnmount(() => {
         >
           <AppIcon name="user" :size="18" />
           Editar perfil
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          class="flex w-full items-center gap-3 border-t border-outline-variant px-4 py-3 text-left font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+          @click="goToSubscription"
+        >
+          <AppIcon name="credit-card" :size="18" />
+          Minha assinatura
         </button>
         <button
           type="button"
