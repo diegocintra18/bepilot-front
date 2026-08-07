@@ -40,6 +40,10 @@ function progressPercent() {
   return Math.min(100, Math.round((used.value / limit.value) * 100))
 }
 
+function redirectToCheckout() {
+  window.location.assign(KIWIFY_CHECKOUT_URL)
+}
+
 function openCancel() {
   cancelError.value = ''
   cancelSuccess.value = ''
@@ -219,15 +223,14 @@ onMounted(async () => {
                 Ative sua assinatura e acesse todos os simulados sem limites.
               </p>
             </div>
-            <a
-              :href="KIWIFY_CHECKOUT_URL"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              @click="redirectToCheckout"
             >
               <AppIcon name="credit-card" :size="20" />
-              Ativar assinatura
-            </a>
+              Assinar agora
+            </button>
           </div>
         </section>
 
