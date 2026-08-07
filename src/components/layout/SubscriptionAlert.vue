@@ -1,19 +1,20 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from '@/components/AppIcon.vue'
 
+const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
+
 const route = useRoute()
-const router = useRouter()
 const auth = useAuthStore()
 
 const visible = computed(
   () => auth.needsSubscription && route.name !== 'subscription',
 )
 
-function goToSubscription() {
-  router.push({ name: 'subscription' })
+function redirectToCheckout() {
+  window.location.assign(KIWIFY_CHECKOUT_URL)
 }
 </script>
 
@@ -32,7 +33,7 @@ function goToSubscription() {
     <button
       type="button"
       class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      @click="goToSubscription"
+      @click="redirectToCheckout"
     >
       <AppIcon name="credit-card" :size="18" />
       Assinar agora
