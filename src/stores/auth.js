@@ -32,6 +32,17 @@ export const useAuthStore = defineStore('auth', () => {
     writeStoredSession(nextToken, nextUser)
   }
 
+  async function updateProfile(payload) {
+    const updatedUser = await authApi.updateProfile(payload)
+    user.value = updatedUser
+    writeStoredSession(token.value, updatedUser)
+    return updatedUser
+  }
+
+  async function changePassword(payload) {
+    return authApi.changePassword(payload)
+  }
+
   function clearSession() {
     token.value = null
     user.value = null
@@ -99,6 +110,8 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     signup,
     login,
+    updateProfile,
+    changePassword,
     restoreSession,
     logout,
     clearSession,

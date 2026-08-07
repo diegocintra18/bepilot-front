@@ -10,6 +10,12 @@ export const authApi = {
   fetchProfile() {
     return api.get('/account/profile', { auth: true }).then(unwrapData)
   },
+  updateProfile(payload) {
+    return api.patch('/account/profile', payload, { auth: true }).then(unwrapData)
+  },
+  changePassword(payload) {
+    return api.post('/account/change-password', payload, { auth: true }).then(unwrapData)
+  },
   logout() {
     return api.post('/account/logout', null, { auth: true })
   },

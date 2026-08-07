@@ -1,9 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { USER_TYPE_LABELS } from '@/constants/userTypes'
 import AppIcon from '@/components/AppIcon.vue'
+import UserMenu from '@/components/layout/UserMenu.vue'
 
 defineProps({
   title: {
@@ -24,16 +24,18 @@ const navItems = [
   { label: 'Gerenciar Assuntos', icon: 'layers', to: { name: 'subjects' }, adminOnly: true },
   { label: 'Gerenciar Questões', icon: 'list', to: { name: 'questions' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer', to: { name: 'simulation-history' } },
-  { label: 'Performance', icon: 'trending-up' },
-  { label: 'Configurações', icon: 'settings' },
 ]
 
 const visibleNav = computed(() => navItems.filter((item) => !item.adminOnly || auth.isAdmin))
-const navRoutes = computed(() => visibleNav.value.filter((item) => item.to))
-const navPlaceholders = computed(() => visibleNav.value.filter((item) => !item.to))
+
+watch(
+  () => route.fullPath,
+  () => {
+    mobileOpen.value = false
+  },
+)
 
 function isActive(item) {
-  if (!item.to) return false
   if (item.to.name) return route.name === item.to.name
   return route.path === item.to.path || route.path.startsWith(`${item.to.path}/`)
 }
@@ -68,7 +70,7 @@ async function logout() {
 
       <nav class="flex-1 overflow-y-auto" aria-label="Navegação do aplicativo">
         <RouterLink
-          v-for="item in navRoutes"
+          v-for="item in visibleNav"
           :key="item.label"
           :to="item.to"
           class="mx-2 my-1 flex items-center gap-3 rounded-xl px-4 py-3 transition-transform active:scale-[0.98]"
@@ -81,15 +83,6 @@ async function logout() {
           <AppIcon :name="item.icon" :size="20" />
           <span class="font-button-text text-button-text">{{ item.label }}</span>
         </RouterLink>
-        <a
-          v-for="item in navPlaceholders"
-          :key="item.label"
-          href="#"
-          class="mx-2 my-1 flex items-center gap-3 rounded-xl px-4 py-3 text-on-surface-variant transition-transform hover:bg-surface-variant active:scale-[0.98]"
-        >
-          <AppIcon :name="item.icon" :size="20" />
-          <span class="font-button-text text-button-text">{{ item.label }}</span>
-        </a>
       </nav>
 
       <div class="mt-auto space-y-4 px-4">
@@ -122,7 +115,7 @@ async function logout() {
       </div>
     </aside>
 
-    <main class="flex h-screen flex-1 flex-col md:ml-64">
+    <main class="flex h-dvh flex-1 flex-col md:ml-64">
       <header
         class="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile md:px-12"
       >
@@ -141,22 +134,7 @@ async function logout() {
         </div>
 
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-3 rounded-full px-3 py-1.5 transition-all hover:bg-surface-container-low">
-            <div class="hidden text-right sm:block">
-              <p class="font-button-text text-button-text leading-tight text-on-surface">
-                {{ auth.user?.fullName }}
-              </p>
-              <p class="font-body-md text-sm leading-tight text-on-surface-variant">
-                {{ USER_TYPE_LABELS[auth.user?.userType] || 'Usuário' }}
-              </p>
-            </div>
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary-container bg-surface-container font-button-text text-button-text font-bold text-primary"
-              aria-hidden="true"
-            >
-              {{ auth.user?.initials }}
-            </div>
-          </div>
+          <UserMenu />
           <button
             type="button"
             class="rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-low"
@@ -167,7 +145,7 @@ async function logout() {
         </div>
       </header>
 
-      <div class="flex-1 overflow-y-auto p-margin-mobile md:p-12">
+      <div class="flex-1 overflow-y-auto overscroll-y-contain overflow-x-hidden p-margin-mobile md:p-12 [-webkit-overflow-scrolling:touch]">
         <div class="mx-auto w-full max-w-container-max-width">
           <slot />
         </div>

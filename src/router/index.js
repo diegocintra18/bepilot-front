@@ -111,6 +111,16 @@ const router = createRouter({
       component: () => import('@/views/admin/QuestionFormView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
+    {
+      path: '/perfil',
+      name: 'profile',
+      component: () => import('@/views/ProfileView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'home' },
+    },
   ],
 })
 

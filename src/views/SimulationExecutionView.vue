@@ -198,7 +198,7 @@ onBeforeRouteLeave((to, from, next) => {
 
     <template v-else>
       <div
-        class="sticky top-0 z-20 -mx-margin-mobile mb-stack-lg flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant bg-surface-container-lowest px-margin-mobile py-4 md:-mx-12 md:px-12"
+        class="sticky top-0 z-20 -mx-margin-mobile -mt-margin-mobile mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant bg-surface-container-lowest px-margin-mobile py-4 md:-mx-12 md:-mt-12 md:px-12"
       >
         <div class="flex items-center gap-4">
           <button
@@ -266,7 +266,7 @@ onBeforeRouteLeave((to, from, next) => {
 
           <ValidationMessages :message="store.error" />
 
-          <div class="flex items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-4">
             <button
               type="button"
               :disabled="submitting || store.currentIndex <= 0"
@@ -279,22 +279,22 @@ onBeforeRouteLeave((to, from, next) => {
 
             <button
               type="button"
-              :disabled="submitting || store.status !== 'in_progress'"
-              class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              @click="askSubmit"
-            >
-              <AppIcon name="check-circle" :size="18" />
-              {{ submitting ? 'Finalizando...' : 'Finalizar Simulado' }}
-            </button>
-
-            <button
-              type="button"
               :disabled="submitting || store.currentIndex >= store.totalQuestions - 1"
-              class="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+              class="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40 md:order-3"
               @click="goNext"
             >
               Próxima
               <AppIcon name="chevron-right" :size="18" />
+            </button>
+
+            <button
+              type="button"
+              :disabled="submitting || store.status !== 'in_progress'"
+              class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:order-2 md:w-auto"
+              @click="askSubmit"
+            >
+              <AppIcon name="check-circle" :size="18" />
+              {{ submitting ? 'Finalizando...' : 'Finalizar Simulado' }}
             </button>
           </div>
         </div>
