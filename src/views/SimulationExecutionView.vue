@@ -198,7 +198,7 @@ onBeforeRouteLeave((to, from, next) => {
 
     <template v-else>
       <div
-        class="sticky top-0 z-20 -mx-margin-mobile -mt-margin-mobile mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant bg-surface-container-lowest px-margin-mobile py-4 md:-mx-12 md:-mt-12 md:px-12"
+        class="sticky top-0 z-20 mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant bg-surface-container-lowest px-5 py-4 md:px-8"
       >
         <div class="flex items-center gap-4">
           <button
