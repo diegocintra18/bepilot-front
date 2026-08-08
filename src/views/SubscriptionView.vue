@@ -110,7 +110,30 @@ onMounted(async () => {
       </div>
 
       <div v-else-if="error" class="space-y-stack-md">
-        <ValidationMessages :message="error" />
+        <div
+          class="rounded-xl border border-primary bg-primary-fixed p-6 shadow-lift md:p-8"
+        >
+          <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface">
+                Sua assinatura pode estar inativa
+              </h3>
+              <p class="mt-2 max-w-xl font-body-md text-body-md text-on-surface-variant">
+                Não conseguimos localizar uma assinatura ativa no momento. Se você já pagou, pode
+                levar alguns minutos para ativar. Caso ainda não tenha assinado, ative agora para
+                desbloquear simulados ilimitados e questões comentadas e decolar na sua prova da ANAC.
+              </p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              @click="redirectToCheckout"
+            >
+              <AppIcon name="credit-card" :size="20" />
+              Assinar agora
+            </button>
+          </div>
+        </div>
         <button
           type="button"
           class="rounded-lg border border-outline-variant px-4 py-2 font-button-text text-button-text text-on-surface-variant transition-colors hover:bg-surface-container-low"

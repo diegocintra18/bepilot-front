@@ -21,14 +21,12 @@ function redirectToCheckout() {
 <template>
   <div
     v-if="visible"
-    class="flex flex-wrap items-center justify-between gap-3 border-b border-primary bg-primary-fixed px-margin-mobile py-3 md:px-12"
+    class="flex w-full flex-wrap items-center justify-between gap-3 border-b border-secondary bg-secondary-container px-margin-mobile py-3 md:px-12"
     role="status"
   >
-    <div class="flex min-w-0 items-center gap-2.5 font-body-md text-body-md text-on-primary-fixed-variant">
+    <div class="flex min-w-0 flex-1 basis-64 items-center gap-2.5 font-body-md text-body-md text-on-secondary-container">
       <AppIcon name="info" class="shrink-0" :size="18" />
-      <span class="truncate">
-        Sua assinatura não está ativa. Ative agora para liberar simulados ilimitados.
-      </span>
+      <span>Sua assinatura não está ativa. Ative agora para liberar simulados ilimitados.</span>
     </div>
     <button
       type="button"

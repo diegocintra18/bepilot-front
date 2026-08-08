@@ -1,6 +1,12 @@
 <script setup>
 import AppIcon from './AppIcon.vue'
 
+const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
+
+function redirectToCheckout() {
+  window.location.assign(KIWIFY_CHECKOUT_URL)
+}
+
 const basicPlan = [
   { label: 'Acesso a 1 curso (PPA ou PPH)', available: true },
   { label: 'Simulados limitados (10/mês)', available: true },
@@ -60,6 +66,7 @@ const proPlan = [
           <button
             type="button"
             class="w-full cursor-pointer rounded-lg border-2 border-primary py-3 font-button-text text-button-text text-primary transition-all hover:bg-primary-container hover:text-on-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            @click="redirectToCheckout"
           >
             Assinar Básico
           </button>
@@ -98,6 +105,7 @@ const proPlan = [
           <button
             type="button"
             class="w-full cursor-pointer rounded-lg bg-primary py-4 font-button-text text-button-text text-on-primary shadow-lg transition-all hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            @click="redirectToCheckout"
           >
             Assinar Pro Agora
           </button>
