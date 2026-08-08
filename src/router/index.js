@@ -112,6 +112,30 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/users',
+      name: 'users',
+      component: () => import('@/views/admin/UsersListView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/users/new',
+      name: 'user-new',
+      component: () => import('@/views/admin/UserFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/users/:id/edit',
+      name: 'user-edit',
+      component: () => import('@/views/admin/UserFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/users/:id',
+      name: 'user-detail',
+      component: () => import('@/views/admin/UserDetailView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/perfil',
       name: 'profile',
       component: () => import('@/views/ProfileView.vue'),
