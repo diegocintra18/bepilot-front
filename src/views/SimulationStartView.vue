@@ -10,8 +10,6 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
-const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
-
 const router = useRouter()
 const simulation = useSimulationStore()
 const coursesStore = useCoursesStore()
@@ -59,7 +57,7 @@ function chooseType(value) {
 }
 
 function redirectToCheckout() {
-  window.location.assign(KIWIFY_CHECKOUT_URL)
+  window.location.assign(auth.buildCheckoutUrl())
 }
 
 async function start() {

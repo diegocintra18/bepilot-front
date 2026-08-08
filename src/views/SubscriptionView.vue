@@ -5,8 +5,6 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
-const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
-
 const auth = useAuthStore()
 
 const error = ref('')
@@ -41,7 +39,7 @@ function progressPercent() {
 }
 
 function redirectToCheckout() {
-  window.location.assign(KIWIFY_CHECKOUT_URL)
+  window.location.assign(auth.buildCheckoutUrl())
 }
 
 function openCancel() {

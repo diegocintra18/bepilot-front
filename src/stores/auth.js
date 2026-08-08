@@ -4,6 +4,7 @@ import { authApi } from '@/api/auth'
 import { UserType } from '@/constants/userTypes'
 
 const STORAGE_KEY = 'bepilot.auth'
+const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
 
 function readStoredSession() {
   try {
@@ -39,6 +40,14 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = nextToken
     user.value = nextUser
     writeStoredSession(nextToken, nextUser)
+  }
+
+  function buildCheckoutUrl() {
+    const params = new URLSearchParams()
+    if (user.value?.email) params.set('email', user.value.email)
+    if (user.value?.fullName) params.set('name', user.value.fullName)
+    const query = params.toString()
+    return query ? `${KIWIFY_CHECKOUT_URL}?${query}` : KIWIFY_CHECKOUT_URL
   }
 
   async function updateProfile(payload) {
@@ -150,6 +159,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     updateProfile,
     changePassword,
+    buildCheckoutUrl,
     fetchSubscription,
     cancelSubscription,
     restoreSession,

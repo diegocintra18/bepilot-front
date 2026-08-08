@@ -4,8 +4,6 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from '@/components/AppIcon.vue'
 
-const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
-
 const route = useRoute()
 const auth = useAuthStore()
 
@@ -14,7 +12,7 @@ const visible = computed(
 )
 
 function redirectToCheckout() {
-  window.location.assign(KIWIFY_CHECKOUT_URL)
+  window.location.assign(auth.buildCheckoutUrl())
 }
 </script>
 

@@ -1,10 +1,11 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth'
 import AppIcon from './AppIcon.vue'
 
-const KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/pNodtu8'
+const auth = useAuthStore()
 
 function redirectToCheckout() {
-  window.location.assign(KIWIFY_CHECKOUT_URL)
+  window.location.assign(auth.buildCheckoutUrl())
 }
 
 const basicPlan = [
