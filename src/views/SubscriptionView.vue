@@ -114,13 +114,18 @@ onMounted(async () => {
           <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
               <h3 class="font-headline-md text-headline-md text-on-surface">
-                Sua assinatura pode estar inativa
+                Sua assinatura não está ativa no momento.
               </h3>
-              <p class="mt-2 max-w-xl font-body-md text-body-md text-on-surface-variant">
-                Não conseguimos localizar uma assinatura ativa no momento. Se você já pagou, pode
-                levar alguns minutos para ativar. Caso ainda não tenha assinado, ative agora para
-                desbloquear simulados ilimitados e questões comentadas e decolar na sua prova da ANAC.
-              </p>
+              <div class="mt-2 max-w-xl space-y-2 font-body-md text-body-md text-on-surface-variant">
+                <p>
+                  Se você já realizou o pagamento, aguarde alguns minutos para a ativação.
+                </p>
+                <p>
+                  Ainda não assinou? Ative agora e tenha acesso a simulados ilimitados e
+                  questões comentadas para chegar preparado à prova da ANAC.
+                </p>
+                <p class="font-bold text-on-surface">Decole rumo à aprovação! ✈️</p>
+              </div>
             </div>
             <button
               type="button"
