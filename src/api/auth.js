@@ -7,6 +7,12 @@ export const authApi = {
   login(credentials) {
     return api.post('/auth/login', credentials).then(unwrapData)
   },
+  forgotPassword(payload) {
+    return api.post('/auth/forgot-password', payload).then(unwrapData)
+  },
+  resetPassword(payload) {
+    return api.post('/auth/reset-password', payload).then(unwrapData)
+  },
   fetchProfile() {
     return api.get('/account/profile', { auth: true }).then(unwrapData)
   },

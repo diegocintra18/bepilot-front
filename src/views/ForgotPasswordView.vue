@@ -1,33 +1,29 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AuthLayout from '@/components/auth/AuthLayout.vue'
 import FormField from '@/components/auth/FormField.vue'
-import PasswordInput from '@/components/auth/PasswordInput.vue'
 import SubmitButton from '@/components/auth/SubmitButton.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
-const route = useRoute()
-const router = useRouter()
 const auth = useAuthStore()
 
 const form = reactive({
   email: '',
-  password: '',
 })
 const fieldErrors = reactive({
   email: '',
-  password: '',
 })
 const apiError = ref('')
+const successMessage = ref('')
 const loading = ref(false)
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const RECOVERY_SENT_MESSAGE =
+  'Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.'
 
 function validate() {
   fieldErrors.email = ''
-  fieldErrors.password = ''
   let valid = true
 
   if (!form.email) {
@@ -35,10 +31,6 @@ function validate() {
     valid = false
   } else if (!EMAIL_PATTERN.test(form.email)) {
     fieldErrors.email = 'Informe um e-mail válido.'
-    valid = false
-  }
-  if (!form.password) {
-    fieldErrors.password = 'Informe sua senha.'
     valid = false
   }
   return valid
@@ -50,13 +42,10 @@ async function submit() {
 
   loading.value = true
   try {
-    await auth.login({ email: form.email, password: form.password })
-    const redirect =
-      typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
-        ? route.query.redirect
-        : '/dashboard'
-    router.push(redirect)
+    await auth.forgotPassword({ email: form.email })
+    successMessage.value = RECOVERY_SENT_MESSAGE
   } catch (error) {
+    successMessage.value = ''
     if (error.kind === 'validation' && Array.isArray(error.fieldErrors)) {
       error.fieldErrors.forEach(({ field, message }) => {
         if (field in fieldErrors) fieldErrors[field] = message
@@ -70,7 +59,11 @@ async function submit() {
 </script>
 
 <template>
-  <AuthLayout title="Entrar" subtitle="Acesse sua conta para continuar seus simulados.">
+  <AuthLayout
+    title="Recuperar senha"
+    subtitle="Informe seu e-mail e enviaremos um link para redefinir sua senha."
+  >
+    <ValidationMessages v-if="successMessage" :message="successMessage" variant="success" class="mb-stack-md" />
     <ValidationMessages :message="apiError" class="mb-stack-md" />
     <form novalidate @submit.prevent="submit">
       <div class="flex flex-col gap-stack-md">
@@ -89,39 +82,18 @@ async function submit() {
           </template>
         </FormField>
 
-        <FormField :error="fieldErrors.password" label="Senha" name="password">
-          <template #default="{ id, error }">
-            <PasswordInput
-              :id="id"
-              v-model="form.password"
-              name="password"
-              autocomplete="current-password"
-              placeholder="Sua senha"
-              :aria-describedby="error ? `${id}-error` : undefined"
-            />
-          </template>
-        </FormField>
-
-        <SubmitButton :loading="loading">Entrar</SubmitButton>
+        <SubmitButton :loading="loading">Enviar link de recuperação</SubmitButton>
       </div>
     </form>
 
     <template #footer>
       <p class="text-body-md text-on-surface-variant">
-        Ainda não tem conta?
+        Lembrou a senha?
         <RouterLink
-          to="/register"
+          to="/login"
           class="font-button-text font-bold text-primary underline-offset-4 hover:underline"
         >
-          Cadastre-se
-        </RouterLink>
-      </p>
-      <p class="mt-stack-sm text-body-md text-on-surface-variant">
-        <RouterLink
-          to="/forgot-password"
-          class="font-button-text font-bold text-primary underline-offset-4 hover:underline"
-        >
-          Esqueci minha senha?
+          Entrar
         </RouterLink>
       </p>
     </template>

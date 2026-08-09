@@ -61,6 +61,14 @@ export const useAuthStore = defineStore('auth', () => {
     return authApi.changePassword(payload)
   }
 
+  async function forgotPassword(payload) {
+    return authApi.forgotPassword(payload)
+  }
+
+  async function resetPassword(payload) {
+    return authApi.resetPassword(payload)
+  }
+
   async function fetchSubscription() {
     subscriptionLoading.value = true
     try {
@@ -159,6 +167,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     updateProfile,
     changePassword,
+    forgotPassword,
+    resetPassword,
     buildCheckoutUrl,
     fetchSubscription,
     cancelSubscription,
