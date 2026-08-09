@@ -17,7 +17,16 @@ function normalizeMeta(meta = {}) {
 export const useUsersStore = defineStore('users', () => {
   const users = ref([])
   const meta = ref({ total: 0, perPage: 10, currentPage: 1, lastPage: 1 })
-  const filters = ref({ page: 1, limit: 10, search: '', userType: '' })
+  const filters = ref({
+    page: 1,
+    limit: 10,
+    search: '',
+    userType: '',
+    status: '',
+    subscriptionStatus: '',
+    sort: 'createdAt',
+    order: 'desc',
+  })
   const loading = ref(false)
   const error = ref('')
 
@@ -25,7 +34,7 @@ export const useUsersStore = defineStore('users', () => {
     loading.value = true
     error.value = ''
     try {
-      const result = await usersApi.list(filters.value)
+      const result = await usersApi.adminList(filters.value)
       users.value = result.data
       meta.value = normalizeMeta(result.meta)
     } catch (err) {
@@ -35,16 +44,14 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
-  function setSearch(search) {
-    filters.value.search = search
+  function setFilter(key, value) {
+    filters.value[key] = value
     filters.value.page = 1
     return fetchUsers()
   }
 
-  function setUserType(userType) {
-    filters.value.userType = userType
-    filters.value.page = 1
-    return fetchUsers()
+  function setSearch(search) {
+    return setFilter('search', search)
   }
 
   function goToPage(page) {
@@ -53,7 +60,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   function getUser(id) {
-    return usersApi.get(id)
+    return usersApi.adminGet(id)
   }
 
   function createUser(payload) {
@@ -61,7 +68,11 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   function updateUser(id, payload) {
-    return usersApi.update(id, payload)
+    return usersApi.adminUpdate(id, payload)
+  }
+
+  function resetPassword(id, payload) {
+    return usersApi.adminResetPassword(id, payload)
   }
 
   function deleteUser(id) {
@@ -75,12 +86,13 @@ export const useUsersStore = defineStore('users', () => {
     loading,
     error,
     fetchUsers,
+    setFilter,
     setSearch,
-    setUserType,
     goToPage,
     getUser,
     createUser,
     updateUser,
+    resetPassword,
     deleteUser,
   }
 })

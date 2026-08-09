@@ -136,6 +136,30 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/subscriptions',
+      name: 'subscriptions',
+      component: () => import('@/views/admin/SubscriptionsListView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/subscriptions/new',
+      name: 'subscription-new',
+      component: () => import('@/views/admin/SubscriptionFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/subscriptions/:id',
+      name: 'subscription-detail',
+      component: () => import('@/views/admin/SubscriptionDetailView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/subscriptions/:id/edit',
+      name: 'subscription-edit',
+      component: () => import('@/views/admin/SubscriptionFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/perfil',
       name: 'profile',
       component: () => import('@/views/ProfileView.vue'),

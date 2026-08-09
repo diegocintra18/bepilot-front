@@ -39,3 +39,18 @@ export function formatDate(iso) {
   if (Number.isNaN(d.getTime())) return '—'
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
+
+export function toIsoDateTime(localValue) {
+  if (!localValue) return ''
+  const date = new Date(localValue)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toISOString()
+}
+
+export function fromIsoToLocalDateTime(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+  return local.toISOString().slice(0, 16)
+}

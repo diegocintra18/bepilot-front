@@ -1,8 +1,15 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
 import { useAuthStore } from '@/stores/auth'
 import { USER_TYPE_LABELS } from '@/constants/userTypes'
+import {
+  ACCOUNT_STATUS_CLASSES,
+  ACCOUNT_STATUS_LABELS,
+  USER_SUBSCRIPTION_STATUS_CLASSES,
+  USER_SUBSCRIPTION_STATUS_LABELS,
+} from '@/constants/statuses'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
@@ -10,17 +17,42 @@ import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
 const store = useUsersStore()
 const auth = useAuthStore()
+const router = useRouter()
 
 const searchInput = ref(store.filters.search)
 const userTypeFilter = ref(store.filters.userType)
+const statusFilter = ref(store.filters.status)
+const subscriptionStatusFilter = ref(store.filters.subscriptionStatus)
+const sortFilter = ref(store.filters.sort)
+const orderFilter = ref(store.filters.order)
 const confirmDelete = ref(null)
 const deleting = ref(false)
 const actionError = ref('')
 
 const userTypeOptions = [
   { value: '', label: 'Todos os tipos' },
-  { value: 1, label: 'Alunos' },
-  { value: 2, label: 'Administradores' },
+  { value: 'student', label: 'Alunos' },
+  { value: 'admin', label: 'Administradores' },
+]
+
+const statusOptions = [
+  { value: '', label: 'Todos os status' },
+  { value: 'active', label: 'Ativos' },
+  { value: 'inactive', label: 'Inativos' },
+  { value: 'blocked', label: 'Bloqueados' },
+]
+
+const subscriptionStatusOptions = [
+  { value: '', label: 'Todas as assinaturas' },
+  { value: 'inactive', label: 'Inativas' },
+  { value: 'active', label: 'Ativas' },
+  { value: 'cancelled', label: 'Canceladas' },
+]
+
+const sortOptions = [
+  { value: 'createdAt', label: 'Cadastro' },
+  { value: 'updatedAt', label: 'Atualização' },
+  { value: 'fullName', label: 'Nome' },
 ]
 
 const pageStart = computed(() => (store.meta.currentPage - 1) * store.meta.perPage + 1)
@@ -46,7 +78,28 @@ function applySearch() {
 }
 
 function changeUserType() {
-  store.setUserType(userTypeFilter.value)
+  store.setFilter('userType', userTypeFilter.value)
+}
+
+function changeStatus() {
+  store.setFilter('status', statusFilter.value)
+}
+
+function changeSubscriptionStatus() {
+  store.setFilter('subscriptionStatus', subscriptionStatusFilter.value)
+}
+
+function changeSort() {
+  store.setFilter('sort', sortFilter.value)
+}
+
+function toggleOrder() {
+  orderFilter.value = orderFilter.value === 'asc' ? 'desc' : 'asc'
+  store.setFilter('order', orderFilter.value)
+}
+
+function manageSubscription(user) {
+  router.push({ name: 'subscriptions', query: { userId: user.id } })
 }
 
 function askDelete(user) {
@@ -93,36 +146,89 @@ async function handleDelete() {
       </section>
 
       <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <form class="flex w-full max-w-md gap-2" role="search" @submit.prevent="applySearch">
-            <input
-              v-model="searchInput"
-              type="search"
-              name="search"
-              placeholder="Buscar por nome ou e-mail..."
-              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-            >
-            <button
-              type="submit"
-              class="flex shrink-0 items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
-            >
-              <AppIcon name="search" :size="18" />
-              Buscar
-            </button>
-          </form>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <form class="flex w-full max-w-md gap-2" role="search" @submit.prevent="applySearch">
+              <input
+                v-model="searchInput"
+                type="search"
+                name="search"
+                placeholder="Buscar por nome, e-mail ou WhatsApp..."
+                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              >
+              <button
+                type="submit"
+                class="flex shrink-0 items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+              >
+                <AppIcon name="search" :size="18" />
+                Buscar
+              </button>
+            </form>
 
-          <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
-            Tipo
-            <select
-              v-model="userTypeFilter"
-              class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-              @change="changeUserType"
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
+              <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
+                Tipo
+                <select
+                  v-model="userTypeFilter"
+                  class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                  @change="changeUserType"
+                >
+                  <option v-for="option in userTypeOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
+                Status
+                <select
+                  v-model="statusFilter"
+                  class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                  @change="changeStatus"
+                >
+                  <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
+                Assinatura
+                <select
+                  v-model="subscriptionStatusFilter"
+                  class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                  @change="changeSubscriptionStatus"
+                >
+                  <option v-for="option in subscriptionStatusOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 border-t border-outline-variant pt-4 sm:flex-row sm:items-center">
+            <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
+              Ordenar por
+              <select
+                v-model="sortFilter"
+                class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                @change="changeSort"
+              >
+                <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </label>
+            <button
+              type="button"
+              class="flex w-fit items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+              @click="toggleOrder"
             >
-              <option v-for="option in userTypeOptions" :key="String(option.value)" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-          </label>
+              <AppIcon :name="orderFilter === 'asc' ? 'chevron-up' : 'chevron-down'" :size="16" />
+              {{ orderFilter === 'asc' ? 'Crescente' : 'Decrescente' }}
+            </button>
+          </div>
         </div>
 
         <ValidationMessages :message="actionError" class="mt-stack-md" />
@@ -134,14 +240,17 @@ async function handleDelete() {
               <tr class="font-label-caps text-label-caps text-on-surface-variant">
                 <th class="px-2 py-3">USUÁRIO</th>
                 <th class="px-2 py-3">E-MAIL</th>
+                <th class="px-2 py-3">WHATSAPP</th>
                 <th class="px-2 py-3">TIPO</th>
+                <th class="px-2 py-3">STATUS</th>
+                <th class="px-2 py-3">ASSINATURA</th>
                 <th class="px-2 py-3">CADASTRADO EM</th>
                 <th class="px-2 py-3 text-right">AÇÕES</th>
               </tr>
             </thead>
             <tbody class="font-body-md">
               <tr v-if="store.loading">
-                <td colspan="5" class="px-2 py-10 text-center">
+                <td colspan="8" class="px-2 py-10 text-center">
                   <span
                     class="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
                     role="status"
@@ -150,7 +259,7 @@ async function handleDelete() {
                 </td>
               </tr>
               <tr v-else-if="store.users.length === 0">
-                <td colspan="5" class="px-2 py-10 text-center">
+                <td colspan="8" class="px-2 py-10 text-center">
                   <p class="font-body-md text-body-md text-on-surface-variant">
                     Nenhum usuário encontrado.
                   </p>
@@ -176,6 +285,7 @@ async function handleDelete() {
                   </div>
                 </td>
                 <td class="px-2 py-4 text-on-surface-variant">{{ user.email || '—' }}</td>
+                <td class="px-2 py-4 text-sm text-on-surface-variant">{{ user.whatsapp || '—' }}</td>
                 <td class="px-2 py-4">
                   <span
                     class="rounded-full px-2.5 py-1 text-xs font-bold"
@@ -186,6 +296,24 @@ async function handleDelete() {
                     "
                   >
                     {{ userTypeLabel(user.userType) }}
+                  </span>
+                </td>
+                <td class="px-2 py-4">
+                  <span
+                    class="rounded-full px-2.5 py-1 text-xs font-bold"
+                    :class="ACCOUNT_STATUS_CLASSES[user.status] || 'bg-surface-variant text-on-surface-variant'"
+                  >
+                    {{ ACCOUNT_STATUS_LABELS[user.status] || user.status || '—' }}
+                  </span>
+                </td>
+                <td class="px-2 py-4">
+                  <span
+                    class="rounded-full px-2.5 py-1 text-xs font-bold"
+                    :class="
+                      USER_SUBSCRIPTION_STATUS_CLASSES[user.subscriptionStatus] || 'bg-surface-variant text-on-surface-variant'
+                    "
+                  >
+                    {{ USER_SUBSCRIPTION_STATUS_LABELS[user.subscriptionStatus] || user.subscriptionStatus || '—' }}
                   </span>
                 </td>
                 <td class="px-2 py-4 text-sm text-on-surface-variant">{{ formatDate(user.createdAt) }}</td>
@@ -205,6 +333,15 @@ async function handleDelete() {
                     >
                       <AppIcon name="edit" :size="18" />
                     </RouterLink>
+                    <button
+                      type="button"
+                      class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+                      :aria-label="`Gerenciar assinatura de ${user.fullName}`"
+                      :title="'Gerenciar assinatura'"
+                      @click="manageSubscription(user)"
+                    >
+                      <AppIcon name="credit-card" :size="18" />
+                    </button>
                     <button
                       type="button"
                       class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container disabled:cursor-not-allowed disabled:opacity-40"

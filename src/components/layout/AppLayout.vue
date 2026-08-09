@@ -31,6 +31,7 @@ const navItems = [
   { label: 'Gerenciar Assuntos', icon: 'layers', to: { name: 'subjects' }, adminOnly: true },
   { label: 'Gerenciar Questões', icon: 'list', to: { name: 'questions' }, adminOnly: true },
   { label: 'Gerenciar Usuários', icon: 'user', to: { name: 'users' }, adminOnly: true },
+  { label: 'Assinaturas', icon: 'credit-card', to: { name: 'subscriptions' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer', to: { name: 'simulation-history' } },
 ]
 

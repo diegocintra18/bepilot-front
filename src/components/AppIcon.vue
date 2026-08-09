@@ -141,6 +141,14 @@ const icons = {
     inner: '<polyline points="9 18 15 12 9 6"/>',
     filled: false,
   },
+  'chevron-up': {
+    inner: '<polyline points="18 15 12 9 6 15"/>',
+    filled: false,
+  },
+  'chevron-down': {
+    inner: '<polyline points="6 9 12 15 18 9"/>',
+    filled: false,
+  },
   layers: {
     inner: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
     filled: false,

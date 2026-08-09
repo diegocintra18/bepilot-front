@@ -3,12 +3,14 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
 import { USER_TYPE_LABELS, UserType } from '@/constants/userTypes'
+import { ACCOUNT_STATUS_LABELS, USER_TYPE_STRING_LABELS } from '@/constants/statuses'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import FormField from '@/components/auth/FormField.vue'
 import PasswordInput from '@/components/auth/PasswordInput.vue'
 import SubmitButton from '@/components/auth/SubmitButton.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,14 +21,18 @@ const userId = computed(() => Number(route.params.id))
 const title = computed(() => (isEdit.value ? 'Editar Usuário' : 'Novo Usuário'))
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const USER_TYPE_INTEGER_TO_STRING = { [UserType.Student]: 'student', [UserType.Admin]: 'admin' }
 
 const form = reactive({
   fullName: '',
   email: '',
+  whatsapp: '',
   userType: UserType.Student,
+  status: 'active',
+  freeSimulationsUsed: 0,
   password: '',
 })
-const fieldErrors = reactive({ fullName: '', email: '', userType: '', password: '' })
+const fieldErrors = reactive({ fullName: '', email: '', whatsapp: '', userType: '', status: '', freeSimulationsUsed: '', password: '' })
 const metaInfo = reactive({
   id: null,
   initials: '',
@@ -35,10 +41,21 @@ const metaInfo = reactive({
   whatsapp: '',
   subscriptionStatus: '',
 })
+const original = reactive({
+  userType: null,
+  status: null,
+})
 const apiError = ref('')
 const loading = ref(false)
 const fetching = ref(false)
 const notFound = ref(false)
+const confirmSensitive = ref(false)
+
+const statusOptions = [
+  { value: 'active', label: ACCOUNT_STATUS_LABELS.active },
+  { value: 'inactive', label: ACCOUNT_STATUS_LABELS.inactive },
+  { value: 'blocked', label: ACCOUNT_STATUS_LABELS.blocked },
+]
 
 onMounted(async () => {
   if (!isEdit.value) return
@@ -47,7 +64,12 @@ onMounted(async () => {
     const user = await store.getUser(userId.value)
     form.fullName = user.fullName || ''
     form.email = user.email || ''
-    form.userType = user.userType ?? UserType.Student
+    form.whatsapp = user.whatsapp || ''
+    form.userType = USER_TYPE_INTEGER_TO_STRING[user.userType] ?? 'student'
+    form.status = user.status || 'active'
+    form.freeSimulationsUsed = user.freeSimulationsUsed ?? 0
+    original.userType = form.userType
+    original.status = form.status
     metaInfo.id = user.id
     metaInfo.initials = user.initials || ''
     metaInfo.createdAt = user.createdAt || ''
@@ -75,7 +97,10 @@ function formatDate(value) {
 function validate() {
   fieldErrors.fullName = ''
   fieldErrors.email = ''
+  fieldErrors.whatsapp = ''
   fieldErrors.userType = ''
+  fieldErrors.status = ''
+  fieldErrors.freeSimulationsUsed = ''
   fieldErrors.password = ''
   let valid = true
 
@@ -90,37 +115,71 @@ function validate() {
     fieldErrors.email = 'Informe um e-mail válido.'
     valid = false
   }
-  if (form.userType !== UserType.Student && form.userType !== UserType.Admin) {
-    fieldErrors.userType = 'Selecione um tipo de usuário válido.'
-    valid = false
-  }
-  if (!isEdit.value && !form.password) {
-    fieldErrors.password = 'Informe uma senha para o usuário.'
-    valid = false
-  } else if (form.password && form.password.length < 8) {
-    fieldErrors.password = 'A senha deve ter no mínimo 8 caracteres.'
-    valid = false
+  if (!isEdit.value) {
+    if (form.userType !== UserType.Student && form.userType !== UserType.Admin) {
+      fieldErrors.userType = 'Selecione um tipo de usuário válido.'
+      valid = false
+    }
+    if (!form.password) {
+      fieldErrors.password = 'Informe uma senha para o usuário.'
+      valid = false
+    } else if (form.password.length < 8) {
+      fieldErrors.password = 'A senha deve ter no mínimo 8 caracteres.'
+      valid = false
+    }
+  } else {
+    if (form.userType !== 'student' && form.userType !== 'admin') {
+      fieldErrors.userType = 'Selecione um tipo de usuário válido.'
+      valid = false
+    }
+    if (form.status !== 'active' && form.status !== 'inactive' && form.status !== 'blocked') {
+      fieldErrors.status = 'Selecione um status válido.'
+      valid = false
+    }
+    const free = Number(form.freeSimulationsUsed)
+    if (!Number.isInteger(free) || free < 0) {
+      fieldErrors.freeSimulationsUsed = 'Informe um número inteiro maior ou igual a zero.'
+      valid = false
+    }
   }
   return valid
 }
 
-async function submit() {
+function hasSensitiveChanges() {
+  return isEdit.value && (form.userType !== original.userType || form.status !== original.status)
+}
+
+function submit() {
   apiError.value = ''
   if (!validate()) return
+  if (hasSensitiveChanges()) {
+    confirmSensitive.value = true
+    return
+  }
+  doSubmit()
+}
 
+async function doSubmit() {
+  apiError.value = ''
   loading.value = true
-  const payload = {
-    fullName: form.fullName.trim(),
-    email: form.email,
-    userType: Number(form.userType),
-  }
-  if (form.password) {
-    payload.password = form.password
-  }
   try {
     if (isEdit.value) {
+      const payload = {
+        fullName: form.fullName.trim(),
+        email: form.email,
+        whatsapp: form.whatsapp.trim() || null,
+        userType: form.userType,
+        status: form.status,
+        freeSimulationsUsed: Number(form.freeSimulationsUsed),
+      }
       await store.updateUser(userId.value, payload)
     } else {
+      const payload = {
+        fullName: form.fullName.trim(),
+        email: form.email,
+        userType: Number(form.userType),
+        password: form.password,
+      }
       await store.createUser(payload)
     }
     router.push({ name: 'users' })
@@ -134,6 +193,10 @@ async function submit() {
   } finally {
     loading.value = false
   }
+}
+
+function cancelSensitive() {
+  confirmSensitive.value = false
 }
 </script>
 
@@ -210,9 +273,35 @@ async function submit() {
               </template>
             </FormField>
 
+            <FormField v-if="isEdit" :error="fieldErrors.whatsapp" label="WhatsApp" name="whatsapp">
+              <template #default="{ id, error }">
+                <input
+                  :id="id"
+                  v-model="form.whatsapp"
+                  type="text"
+                  name="whatsapp"
+                  autocomplete="tel"
+                  :aria-describedby="error ? `${id}-error` : undefined"
+                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                >
+              </template>
+            </FormField>
+
             <FormField :error="fieldErrors.userType" label="Tipo de usuário" name="userType">
               <template #default="{ id, error }">
                 <select
+                  v-if="isEdit"
+                  :id="id"
+                  v-model="form.userType"
+                  name="userType"
+                  :aria-describedby="error ? `${id}-error` : undefined"
+                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                >
+                  <option value="student">{{ USER_TYPE_STRING_LABELS.student }}</option>
+                  <option value="admin">{{ USER_TYPE_STRING_LABELS.admin }}</option>
+                </select>
+                <select
+                  v-else
                   :id="id"
                   v-model.number="form.userType"
                   name="userType"
@@ -225,14 +314,45 @@ async function submit() {
               </template>
             </FormField>
 
-            <FormField :error="fieldErrors.password" :label="isEdit ? 'Nova senha (opcional)' : 'Senha'" name="password">
+            <FormField v-if="isEdit" :error="fieldErrors.status" label="Status" name="status">
+              <template #default="{ id, error }">
+                <select
+                  :id="id"
+                  v-model="form.status"
+                  name="status"
+                  :aria-describedby="error ? `${id}-error` : undefined"
+                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                >
+                  <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </template>
+            </FormField>
+
+            <FormField v-if="isEdit" :error="fieldErrors.freeSimulationsUsed" label="Simulados gratuitos utilizados" name="freeSimulationsUsed">
+              <template #default="{ id, error }">
+                <input
+                  :id="id"
+                  v-model.number="form.freeSimulationsUsed"
+                  type="number"
+                  name="freeSimulationsUsed"
+                  min="0"
+                  step="1"
+                  :aria-describedby="error ? `${id}-error` : undefined"
+                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                >
+              </template>
+            </FormField>
+
+            <FormField v-if="!isEdit" :error="fieldErrors.password" label="Senha" name="password">
               <template #default="{ id, error }">
                 <PasswordInput
                   :id="id"
                   v-model="form.password"
                   name="password"
-                  :autocomplete="isEdit ? 'new-password' : 'new-password'"
-                  :placeholder="isEdit ? 'Deixe em branco para manter a atual' : 'Mínimo de 8 caracteres'"
+                  autocomplete="new-password"
+                  placeholder="Mínimo de 8 caracteres"
                   :aria-describedby="error ? `${id}-error` : undefined"
                 />
               </template>
@@ -267,10 +387,6 @@ async function submit() {
               <dt class="font-label-caps text-label-caps uppercase text-on-surface-variant">Iniciais</dt>
               <dd class="font-body-md text-body-md text-on-surface">{{ metaInfo.initials || '—' }}</dd>
             </div>
-            <div>
-              <dt class="font-label-caps text-label-caps uppercase text-on-surface-variant">WhatsApp</dt>
-              <dd class="font-body-md text-body-md text-on-surface">{{ metaInfo.whatsapp || '—' }}</dd>
-            </div>
             <div v-if="metaInfo.subscriptionStatus">
               <dt class="font-label-caps text-label-caps uppercase text-on-surface-variant">Assinatura</dt>
               <dd class="font-body-md text-body-md text-on-surface">{{ metaInfo.subscriptionStatus }}</dd>
@@ -287,5 +403,16 @@ async function submit() {
         </aside>
       </div>
     </div>
+
+    <ConfirmDialog
+      :open="confirmSensitive"
+      title="Alterar permissões do usuário"
+      message="Você está alterando as permissões deste usuário. Essa alteração pode modificar o acesso dele ao sistema."
+      confirm-label="Salvar alterações"
+      variant="primary"
+      :loading="loading"
+      @cancel="cancelSensitive"
+      @confirm="doSubmit"
+    />
   </AppLayout>
 </template>

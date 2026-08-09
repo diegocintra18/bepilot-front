@@ -16,6 +16,18 @@ export const usersApi = {
   get(id) {
     return api.get(`/users/${id}`, { auth: true }).then(unwrapData)
   },
+  adminList(params = {}) {
+    return api.get(`/admin/users${toQueryString(params)}`, { auth: true })
+  },
+  adminGet(id) {
+    return api.get(`/admin/users/${id}`, { auth: true }).then(unwrapData)
+  },
+  adminUpdate(id, payload) {
+    return api.put(`/admin/users/${id}`, payload, { auth: true }).then(unwrapData)
+  },
+  adminResetPassword(id, payload) {
+    return api.put(`/admin/users/${id}/password`, payload, { auth: true }).then(unwrapData)
+  },
   create(payload) {
     return api.post('/users', payload, { auth: true }).then(unwrapData)
   },
