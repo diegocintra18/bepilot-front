@@ -17,8 +17,19 @@ const cancelSuccess = ref('')
 const subscription = computed(() => auth.subscription)
 const loading = computed(() => auth.subscriptionLoading)
 
-const statusLabel = computed(
-  () => ({ inactive: 'Inativa', active: 'Ativa', cancelled: 'Cancelada' })[subscription.value?.subscriptionStatus] || 'Inativa',
+const statusLabel = computed(() => {
+  if (isPendingCancellation.value) return 'Cancelamento pendente'
+  return (
+    {
+      inactive: 'Inativa',
+      active: 'Ativa',
+      cancelled: 'Cancelada',
+    }[subscription.value?.subscriptionStatus] || 'Inativa'
+  )
+})
+
+const isPendingCancellation = computed(
+  () => subscription.value?.subscription?.status === 'pending_cancellation',
 )
 
 const isActive = computed(() => subscription.value?.subscriptionStatus === 'active')
@@ -56,21 +67,17 @@ function closeCancel() {
 
 async function confirmCancel() {
   cancelError.value = ''
-  if (!cancelReason.value.trim()) {
-    cancelError.value = 'Informe o motivo do cancelamento.'
-    return
-  }
   cancelling.value = true
   try {
-    await auth.cancelSubscription(cancelReason.value.trim())
+    await auth.cancelSubscription(cancelReason.value.trim() || null)
     cancelOpen.value = false
     cancelReason.value = ''
-    cancelSuccess.value = 'Assinatura cancelada com sucesso.'
+    cancelSuccess.value = 'Solicitação de cancelamento registrada com sucesso. Nossa equipe analisará e você será notificado.'
   } catch (err) {
     if (err.kind === 'validation') {
       cancelError.value = err.fieldErrors?.[0]?.message || 'Verifique o motivo informado.'
     } else {
-      cancelError.value = err.message || 'Não foi possível cancelar a assinatura.'
+      cancelError.value = err.message || 'Não foi possível solicitar o cancelamento da assinatura.'
     }
   } finally {
     cancelling.value = false
@@ -177,9 +184,11 @@ onMounted(async () => {
             <span
               class="inline-flex w-fit items-center gap-2 rounded-full px-4 py-1.5 font-button-text text-button-text"
               :class="
-                isActive
-                  ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
-                  : 'bg-surface-variant text-on-surface-variant'
+                isPendingCancellation
+                  ? 'bg-secondary-fixed text-on-secondary-fixed-variant'
+                  : isActive
+                    ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                    : 'bg-surface-variant text-on-surface-variant'
               "
             >
               <AppIcon name="shield" :size="16" />
@@ -261,11 +270,29 @@ onMounted(async () => {
         </section>
 
         <section v-if="isActive" class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift md:p-8">
-          <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+          <div
+            v-if="isPendingCancellation"
+            class="flex flex-col justify-between gap-4 md:flex-row md:items-center"
+          >
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface">Cancelamento em análise</h3>
+              <p class="font-body-md text-body-md text-on-surface-variant">
+                Sua solicitação de cancelamento foi registrada. Nossa equipe está analisando e você
+                será notificado assim que a assinatura for cancelada.
+              </p>
+            </div>
+            <span
+              class="inline-flex w-fit items-center gap-2 rounded-full bg-secondary-fixed px-4 py-1.5 font-button-text text-button-text text-on-secondary-fixed-variant"
+            >
+              <AppIcon name="shield" :size="16" />
+              Cancelamento pendente
+            </span>
+          </div>
+          <div v-else class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
               <h3 class="font-headline-md text-headline-md text-on-surface">Cancelar assinatura</h3>
               <p class="font-body-md text-body-md text-on-surface-variant">
-                Ao cancelar, você perde o acesso aos simulados ilimitados.
+                Ao solicitar o cancelamento, você continua com acesso até a confirmação da nossa equipe.
               </p>
             </div>
             <button
@@ -274,7 +301,7 @@ onMounted(async () => {
               @click="openCancel"
             >
               <AppIcon name="trash" :size="20" />
-              Cancelar assinatura
+              Solicitar cancelamento
             </button>
           </div>
         </section>
@@ -295,14 +322,15 @@ onMounted(async () => {
             aria-modal="true"
             class="relative w-full max-w-md rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift"
           >
-            <h2 class="font-headline-md text-headline-md text-on-surface">Cancelar assinatura</h2>
+            <h2 class="font-headline-md text-headline-md text-on-surface">Solicitar cancelamento</h2>
             <p class="mt-stack-sm font-body-md text-body-md text-on-surface-variant">
-              Conte-nos o motivo do cancelamento. Esta ação não pode ser desfeita.
+              Informe o motivo (opcional). Nossa equipe avaliará a solicitação e você será
+              notificado da conclusão.
             </p>
 
             <form class="mt-stack-lg" @submit.prevent="confirmCancel">
               <label for="cancel-reason" class="mb-2 block font-label-caps text-label-caps uppercase text-on-surface-variant">
-                Motivo do cancelamento
+                Motivo do cancelamento (opcional)
               </label>
               <textarea
                 id="cancel-reason"
@@ -336,7 +364,7 @@ onMounted(async () => {
                     role="status"
                     aria-label="Carregando"
                   />
-                  {{ cancelling ? 'Cancelando...' : 'Confirmar cancelamento' }}
+                  {{ cancelling ? 'Enviando...' : 'Enviar solicitação' }}
                 </button>
               </div>
             </form>

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import AppIcon from '@/components/AppIcon.vue'
 import UserMenu from '@/components/layout/UserMenu.vue'
 import SubscriptionAlert from '@/components/layout/SubscriptionAlert.vue'
+import NotificationBell from '@/components/NotificationBell.vue'
 
 defineProps({
   title: {
@@ -32,6 +33,7 @@ const navItems = [
   { label: 'Gerenciar Questões', icon: 'list', to: { name: 'questions' }, adminOnly: true },
   { label: 'Gerenciar Usuários', icon: 'user', to: { name: 'users' }, adminOnly: true },
   { label: 'Assinaturas', icon: 'credit-card', to: { name: 'subscriptions' }, adminOnly: true },
+  { label: 'Notificações', icon: 'bell', to: { name: 'notifications' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer', to: { name: 'simulation-history' } },
 ]
 
@@ -146,13 +148,7 @@ async function logout() {
 
         <div class="flex items-center gap-6">
           <UserMenu />
-          <button
-            type="button"
-            class="rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-low"
-            aria-label="Notificações"
-          >
-            <AppIcon name="bell" :size="24" />
-          </button>
+          <NotificationBell />
         </div>
       </header>
 

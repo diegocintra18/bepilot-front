@@ -26,7 +26,15 @@ export const authApi = {
     return api.get('/me/subscription', { auth: true }).then(unwrapData)
   },
   cancelSubscription(payload) {
-    return api.post('/subscriptions/cancel', payload, { auth: true }).then(unwrapData)
+    return api
+      .post('/subscriptions/cancel-request', payload, { auth: true })
+      .then(unwrapData)
+      .catch((error) => {
+        if (error.kind === 'notfound') {
+          return api.post('/subscriptions/cancel', payload, { auth: true }).then(unwrapData)
+        }
+        throw error
+      })
   },
   logout() {
     return api.post('/account/logout', null, { auth: true })
