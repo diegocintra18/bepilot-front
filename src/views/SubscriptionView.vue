@@ -269,7 +269,7 @@ onMounted(async () => {
           </div>
         </section>
 
-        <section v-if="isActive" class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift md:p-8">
+        <section v-if="isActive && subscription?.subscription" class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift md:p-8">
           <div
             v-if="isPendingCancellation"
             class="flex flex-col justify-between gap-4 md:flex-row md:items-center"

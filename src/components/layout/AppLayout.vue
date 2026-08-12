@@ -39,6 +39,8 @@ const navItems = [
 
 const visibleNav = computed(() => navItems.filter((item) => !item.adminOnly || auth.isAdmin))
 
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+
 watch(
   () => route.fullPath,
   () => {
@@ -148,7 +150,7 @@ async function logout() {
 
         <div class="flex items-center gap-6">
           <UserMenu />
-          <NotificationBell />
+          <NotificationBell v-if="isAdminRoute" />
         </div>
       </header>
 

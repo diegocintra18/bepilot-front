@@ -114,7 +114,7 @@ onMounted(() => {
             {{ greeting }}, {{ firstName }}!
           </h2>
           <p class="font-body-lg text-body-lg text-on-surface-variant">
-            Acompanhe seu desempenho nos simulados PPA.
+            Acompanhe seu desempenho nos simulados.
           </p>
         </div>
         <button
@@ -123,7 +123,7 @@ onMounted(() => {
           @click="router.push({ name: 'simulation-start' })"
         >
           <AppIcon name="rocket" :size="20" />
-          Novo PPA Exam
+          Iniciar um novo simulado
         </button>
       </section>
 

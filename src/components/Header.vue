@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from './AppIcon.vue'
-import NotificationBell from './NotificationBell.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -51,8 +50,6 @@ function goToAccount() {
       </nav>
 
       <div class="flex items-center gap-4">
-        <NotificationBell />
-
         <button
           type="button"
           class="cursor-pointer rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
