@@ -190,6 +190,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/study-plans',
+      name: 'study-plans',
+      component: () => import('@/views/StudyPlansView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/study-plans/:id',
+      name: 'study-plan-detail',
+      component: () => import('@/views/StudyPlanDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: { name: 'home' },
     },
