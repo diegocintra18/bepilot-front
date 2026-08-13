@@ -86,26 +86,6 @@ function goToStart() {
   router.push({ name: 'simulation-start' })
 }
 
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useSimulationStore } from '@/stores/simulation'
-import { formatDuration, formatPercentage, formatResponseTime, formatDateTime } from '@/utils/format'
-import AppLayout from '@/components/layout/AppLayout.vue'
-import AppIcon from '@/components/AppIcon.vue'
-import ValidationMessages from '@/components/auth/ValidationMessages.vue'
-import ReviewAccordion from '@/components/simulation/ReviewAccordion.vue'
-
-const route = useRoute()
-const router = useRouter()
-const store = useSimulationStore()
-
-const sessionId = computed(() => Number(route.params.id))
-const loading = ref(true)
-const loadFailed = ref(false)
-
-const result = computed(() => store.result)
-const review = computed(() => store.review)
-
 const examName = computed(
   () => review.value?.exam?.name || result.value?.examName || result.value?.exam?.name || 'Simulado',
 )
@@ -178,27 +158,6 @@ const statusCard = computed(() => {
   }
 })
 
-function goToHistory() {
-  router.push({ name: 'simulation-history' })
-}
-
-function goToStart() {
-  router.push({ name: 'simulation-start' })
-}
-
-onMounted(async () => {
-  try {
-    const detail = await store.loadResult(sessionId.value)
-    if (detail?.status === 'in_progress') {
-      router.replace({ name: 'simulation-execution', params: { id: sessionId.value } })
-      return
-    }
-  } catch {
-    loadFailed.value = true
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <template>
@@ -268,19 +227,16 @@ onMounted(async () => {
            </router-link>
          </template>
 
-         <template v-if="store.generationStatus === 'generating'">
-  <StudyPlanGenerationLoading />
-</template>
-<StudyPlanGenerationModal
-           :visible="showModal"
-           :credits="credits"
-           @close="showModal = false"
-           @generate="generatePlan"
-         />
-       </div>
+          <StudyPlanGenerationLoading v-if="store.generationStatus === 'generating'" />
+          <StudyPlanGenerationModal
+            :visible="showModal"
+            :credits="credits"
+            @close="showModal = false"
+            @generate="generatePlan"
+          />
+      </div>
 
-       </section>
-        <div class="flex items-center gap-4">
+       <div class="flex items-center gap-4">
           <div
             class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-container-lowest"
             aria-hidden="true"
