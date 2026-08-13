@@ -1,4 +1,91 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useSimulationStore } from '@/stores/simulation'
+import { useStudyPlansStore } from '@/stores/studyPlans'
+import StudyPlanGenerationModal from '@/components/study/StudyPlanGenerationModal.vue'
+import { formatDuration, formatPercentage, formatResponseTime, formatDateTime } from '@/utils/format'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import AppIcon from '@/components/AppIcon.vue'
+import ValidationMessages from '@/components/auth/ValidationMessages.vue'
+import ReviewAccordion from '@/components/simulation/ReviewAccordion.vue'
+
+const route = useRoute()
+const router = useRouter()
+const store = useSimulationStore()
+const studyPlanStore = useStudyPlansStore()
+
+const sessionId = computed(() => Number(route.params.id))
+const loading = ref(true)
+const loadFailed = ref(false)
+
+const result = computed(() => store.result)
+const review = computed(() => store.review)
+const plan = computed(() => studyPlanStore.studyPlan)
+
+const hasAccess = computed(() => {
+  // Dummy: always allow for now
+  return true
+})
+
+const completed = computed(() => {
+  return !loading.value && !loadFailed.value
+})
+
+const credits = ref({ plan: 'limited', aiCreditsRemaining: 0 })
+const showModal = ref(false)
+
+const generatePlan = async () => {
+  try {
+    await studyPlanStore.generateStudyPlan(sessionId.value)
+    await fetchCredits()
+  } catch (error) {
+    // error handled by store
+  } finally {
+    showModal.value = false
+  }
+}
+
+const fetchPlan = async () => {
+  try {
+    await studyPlanStore.getStudyPlanBySimulation(sessionId.value)
+  } catch {
+    // no error here, plan might not exist
+  }
+}
+
+const fetchCredits = async () => {
+  try {
+    credits.value = await studyPlanStore.getAiCredits()
+  } catch {
+    credits.value = { plan: 'limited', aiCreditsRemaining: 0 }
+  }
+}
+
+onMounted(async () => {
+  try {
+    const detail = await store.loadResult(sessionId.value)
+    if (detail?.status === 'in_progress') {
+      router.replace({ name: 'simulation-execution', params: { id: sessionId.value } })
+      return
+    }
+    await fetchPlan()
+    await fetchCredits()
+  } catch {
+    loadFailed.value = true
+  } finally {
+    loading.value = false
+  }
+})
+
+function goToHistory() {
+  router.push({ name: 'simulation-history' })
+}
+
+function goToStart() {
+  router.push({ name: 'simulation-start' })
+}
+
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSimulationStore } from '@/stores/simulation'
@@ -152,12 +239,47 @@ onMounted(async () => {
         </div>
       </section>
 
-      <ValidationMessages v-if="loadFailed" :message="store.error" />
+<ValidationMessages v-if="loadFailed" :message="store.error" />
 
-      <section
-        class="flex flex-col items-center justify-between gap-6 rounded-xl border p-6 md:flex-row md:p-8"
-        :class="statusCard.classes"
-      >
+       <section
+         class="flex flex-col items-center justify-between gap-6 rounded-xl border p-6 md:flex-row md:p-8"
+         :class="statusCard.classes"
+       >
+
+       <!-- Personalized Study Plan CTA -->
+       <div v-if="!loading && completed && hasAccess" class="w-full max-w-lg mx-auto mt-8 text-center">
+         <template v-if="!plan">
+           <p class="mb-4">
+             Descubra os conteúdos que você precisa reforçar
+             e os pontos em que apresentou maior dificuldade.
+           </p>
+           <button
+             class="btn btn-primary"
+             @click="showModal = true"
+             :disabled="store.generationStatus === 'generating'"
+           >
+             Gerar plano de estudos com IA
+           </button>
+         </template>
+
+         <template v-else>
+           <router-link :to="`/study-plans/${plan.id}`" class="btn btn-secondary">
+             Ver plano de estudos
+           </router-link>
+         </template>
+
+         <template v-if="store.generationStatus === 'generating'">
+  <StudyPlanGenerationLoading />
+</template>
+<StudyPlanGenerationModal
+           :visible="showModal"
+           :credits="credits"
+           @close="showModal = false"
+           @generate="generatePlan"
+         />
+       </div>
+
+       </section>
         <div class="flex items-center gap-4">
           <div
             class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-container-lowest"
