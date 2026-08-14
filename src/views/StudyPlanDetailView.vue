@@ -36,21 +36,21 @@ onMounted(() => {
       <section v-else-if="store.studyPlan">
         <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6">
           <h3 class="font-bold">Resumo do desempenho</h3>
-          <p class="mt-2">{{ store.studyPlan.summary?.overallAssessment }}</p>
+          <p class="mt-2">{{ store.studyPlan.content?.summary?.overallAssessment }}</p>
 
           <div class="mt-4">
             <h4 class="font-semibold">Conteúdos prioritários</h4>
             <ul class="list-disc ml-5 mt-2">
-              <li v-for="(t, i) in store.studyPlan.summary?.priorityTopics || []" :key="i">{{ t }}</li>
+              <li v-for="(t, i) in store.studyPlan.content?.summary?.priorityTopics || []" :key="i">{{ t }}</li>
             </ul>
           </div>
 
           <div class="mt-6">
             <h4 class="font-semibold">Erros para reforçar</h4>
-            <div v-if="(store.studyPlan.errors || []).length === 0" class="text-on-surface-variant mt-2">Nenhum erro foi identificado neste simulado.</div>
+            <div v-if="(store.studyPlan.content?.errors || []).length === 0" class="text-on-surface-variant mt-2">Nenhum erro foi identificado neste simulado.</div>
             <div v-else class="mt-2 space-y-4">
-              <div v-for="err in store.studyPlan.errors" :key="err.questionNumber" class="p-3 rounded-md border border-outline-variant bg-white">
-                <div class="font-bold">Questão {{ err.questionNumber }}</div>
+              <div v-for="err in store.studyPlan.content?.errors || []" :key="err.questionId" class="p-3 rounded-md border border-outline-variant bg-white">
+                <div class="font-bold">Questão {{ err.questionId }}</div>
                 <div class="text-sm text-on-surface-variant">{{ err.discipline }} • {{ err.topic }}</div>
                 <div class="mt-2">{{ err.explanation }}</div>
                 <div class="mt-2 font-semibold">Recomendação</div>
@@ -61,12 +61,12 @@ onMounted(() => {
 
           <div class="mt-6">
             <h4 class="font-semibold">Pontos de atenção</h4>
-            <div v-if="(store.studyPlan.attentionPoints || []).length === 0" class="text-on-surface-variant mt-2">Não identificamos pontos de atenção relacionados ao tempo de resposta neste simulado.</div>
+            <div v-if="(store.studyPlan.content?.attentionPoints || []).length === 0" class="text-on-surface-variant mt-2">Não identificamos pontos de atenção relacionados ao tempo de resposta neste simulado.</div>
             <div v-else class="mt-2 space-y-4">
-              <div v-for="ap in store.studyPlan.attentionPoints" :key="ap.questionNumber" class="p-3 rounded-md border border-outline-variant bg-white">
-                <div class="font-bold">Questão {{ ap.questionNumber }}</div>
+              <div v-for="ap in store.studyPlan.content?.attentionPoints || []" :key="ap.questionId" class="p-3 rounded-md border border-outline-variant bg-white">
+                <div class="font-bold">Questão {{ ap.questionId }}</div>
                 <div class="text-sm text-on-surface-variant">{{ ap.discipline }} • {{ ap.topic }}</div>
-                <div class="mt-2">Seu tempo: {{ ap.userTimeSeconds }}s • Tempo médio: {{ ap.avgTimeSeconds }}s</div>
+                <div class="mt-2">Seu tempo: {{ ap.responseTimeSeconds }}s • Tempo médio: {{ ap.averageResponseTimeSeconds }}s</div>
                 <div class="mt-2 font-semibold">Recomendação</div>
                 <div>{{ ap.recommendation }}</div>
               </div>

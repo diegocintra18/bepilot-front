@@ -6,6 +6,13 @@ function sanitizeFilename(name) {
     .replace(/(^-|-$)/g, '')
 }
 
+function formatBrDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('pt-BR')
+}
+
 export async function generateStudyPlanPdf(plan, options = {}) {
   // Basic printable HTML fallback. Preferably replace with jsPDF/html2canvas for finer control.
   const title = options.filename || `plano-de-estudos-${plan.simulationId || plan.id}`
@@ -33,7 +40,7 @@ export async function generateStudyPlanPdf(plan, options = {}) {
       <body>
         <header>
           <a href="${logoHref}"><img src="${logoUrl}" alt="vouserpiloto"/></a>
-          <div>${plan.generatedAt || plan.createdAt || ''}</div>
+          <div>${formatBrDate(plan.generatedAt || plan.createdAt) || ''}</div>
         </header>
         <hr />
         <main>
@@ -43,19 +50,23 @@ export async function generateStudyPlanPdf(plan, options = {}) {
           </div>
           <div class="section">
             <strong>Resumo do desempenho</strong>
-            <p>${(plan.summary && plan.summary.overallAssessment) || ''}</p>
+            <p>${(plan.content?.summary && plan.content.summary.overallAssessment) || ''}</p>
           </div>
           <div class="section">
             <strong>Conteúdos prioritários</strong>
-            <ul>${(plan.summary && plan.summary.priorityTopics || []).map((t) => `<li>${t}</li>`).join('')}</ul>
+            <ul>${((plan.content?.summary && plan.content.summary.priorityTopics) || []).map((t) => `<li>${t}</li>`).join('')}</ul>
           </div>
           <div class="section">
             <strong>Erros para reforçar</strong>
-            ${(plan.errors || []).map(e=>`<div style="margin-bottom:8px"><strong>Questão ${e.questionNumber}</strong><div>${e.explanation || ''}</div></div>`).join('')}
+            ${(plan.content?.errors || []).map(
+              (e) => `<div style="margin-bottom:8px"><strong>Questão ${e.questionId}</strong><div>${e.explanation || ''}</div></div>`
+            ).join('')}
           </div>
           <div class="section">
             <strong>Pontos de atenção</strong>
-            ${(plan.attentionPoints || []).map(a=>`<div style="margin-bottom:8px"><strong>Questão ${a.questionNumber}</strong><div>Seu tempo: ${a.userTimeSeconds || ''}s • Tempo médio: ${a.avgTimeSeconds || ''}s</div></div>`).join('')}
+            ${(plan.content?.attentionPoints || []).map(
+              (a) => `<div style="margin-bottom:8px"><strong>Questão ${a.questionId}</strong><div>Seu tempo: ${a.responseTimeSeconds || ''}s • Tempo médio: ${a.averageResponseTimeSeconds || ''}s</div></div>`
+            ).join('')}
           </div>
         </main>
         <footer>

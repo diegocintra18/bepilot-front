@@ -17,7 +17,8 @@ export const studyPlansApi = {
     return api.get(`/exams/${simulationId}/study-plan`, { auth: true }).then(unwrapData)
   },
   list(params = {}) {
-    return api.get(`/study-plans${toQueryString(params)}`, { auth: true }).then(unwrapData)
+    // List endpoints retornam `{ data, meta }` (sem unwrap)
+    return api.get(`/study-plans${toQueryString(params)}`, { auth: true })
   },
   get(id) {
     // Backend uses the session/exam id for study plans

@@ -21,7 +21,8 @@ const formattedDate = computed(() => {
 })
 
 function viewPlan() {
-  emit('viewPlan', props.plan.id)
+  // Backend usa o `:id` como `simulationId`
+  emit('viewPlan', props.plan.simulationId)
 }
 </script>
 
