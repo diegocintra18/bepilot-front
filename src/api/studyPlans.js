@@ -20,6 +20,7 @@ export const studyPlansApi = {
     return api.get(`/study-plans${toQueryString(params)}`, { auth: true }).then(unwrapData)
   },
   get(id) {
-    return api.get(`/study-plans/${id}`, { auth: true }).then(unwrapData)
+    // Backend uses the session/exam id for study plans
+    return api.get(`/exams/${id}/study-plan`, { auth: true }).then(unwrapData)
   },
 }
