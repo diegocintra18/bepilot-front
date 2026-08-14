@@ -12,7 +12,7 @@
         A IA irá analisar seu desempenho neste simulado, identificando os conteúdos que precisam ser reforçados e os pontos em que você apresentou maior dificuldade.
       </p>
 
-      <div v-if="credits.plan === 'limited'">
+    <div v-if="credits.plan === 'limited'">
         <p class="mb-2">Esta análise utilizará 1 crédito de IA.</p>
         <p class="mb-4">Créditos disponíveis: {{ credits.aiCreditsRemaining }}</p>
 
@@ -53,22 +53,21 @@
         </button>
       </div>
 
-      <p v-if="error" class="text-error mt-3" role="alert" aria-live="assertive">{{ error }}</p>
+    <p v-if="errorMessage" class="text-error mt-3" role="alert" aria-live="assertive">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   visible: Boolean,
   credits: Object,
+  loading: { type: Boolean, default: false },
+  errorMessage: { type: String, default: '' },
 })
 const emit = defineEmits(['close', 'generate'])
-
-const loading = ref(false)
-const error = ref('')
 
 const canGenerate = computed(() => {
   // Se plano é ilimitado, sempre pode gerar
@@ -81,16 +80,7 @@ const canGenerate = computed(() => {
 
 async function onGenerate() {
   if (!canGenerate.value) return
-
-  loading.value = true
-  error.value = ''
-  try {
-    await emit('generate')
-  } catch (err) {
-    error.value = err.message || 'Não foi possível gerar seu plano de estudos.'
-  } finally {
-    loading.value = false
-  }
+  emit('generate')
 }
 </script>
 

@@ -5,6 +5,7 @@ import { aiCreditsApi } from '@/api/aiCredits'
 export const useAiCreditsStore = defineStore('aiCredits', () => {
   // State
   const balance = ref(0)
+  const plan = ref('limited')
   const loading = ref(false)
   const error = ref('')
 
@@ -22,11 +23,13 @@ export const useAiCreditsStore = defineStore('aiCredits', () => {
     error.value = ''
     try {
       const result = await aiCreditsApi.getBalance()
-      // Mapper: resposta pode vir como 'balance' ou 'aiCreditsRemaining'
-      balance.value = result.aiCreditsRemaining ?? result.balance ?? 0
+      const snapshot = result?.credits ?? result
+      plan.value = snapshot?.plan ?? 'limited'
+      balance.value = snapshot?.aiCreditsRemaining ?? 0
     } catch (err) {
       error.value = err.message || 'Não foi possível carregar seu saldo de créditos.'
       balance.value = 0
+      plan.value = 'limited'
     } finally {
       loading.value = false
     }
@@ -63,6 +66,7 @@ export const useAiCreditsStore = defineStore('aiCredits', () => {
   return {
     // State
     balance,
+    plan,
     loading,
     error,
     // Getters

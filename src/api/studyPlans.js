@@ -11,10 +11,10 @@ function toQueryString(params = {}) {
 
 export const studyPlansApi = {
   generate(simulationId) {
-    return api.post(`/simulations/${simulationId}/study-plan`, null, { auth: true }).then(unwrapData)
+    return api.post(`/exams/${simulationId}/study-plan`, null, { auth: true }).then(unwrapData)
   },
   getBySimulation(simulationId) {
-    return api.get(`/simulations/${simulationId}/study-plan`, { auth: true }).then(unwrapData)
+    return api.get(`/exams/${simulationId}/study-plan`, { auth: true }).then(unwrapData)
   },
   list(params = {}) {
     return api.get(`/study-plans${toQueryString(params)}`, { auth: true }).then(unwrapData)

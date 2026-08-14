@@ -34,19 +34,25 @@ const completed = computed(() => {
   return !loading.value && !loadFailed.value
 })
 
-const credits = ref({ plan: 'limited', aiCreditsRemaining: 0 })
 const showModal = ref(false)
+const modalError = ref('')
+
+const credits = computed(() => ({
+  plan: aiCreditsStore.plan,
+  aiCreditsRemaining: aiCreditsStore.balance,
+}))
 
 const generatePlan = async () => {
+  modalError.value = ''
   try {
     await studyPlanStore.generateStudyPlan(sessionId.value)
     // Refetch créditos após geração bem-sucedida
     await aiCreditsStore.fetchBalance()
-    await fetchCredits()
-  } catch (error) {
-    // error handled by store
-  } finally {
+    await fetchPlan()
     showModal.value = false
+  } catch (err) {
+    modalError.value = err?.message || 'Não foi possível gerar seu plano de estudos.'
+    // Mantém o modal aberto para o usuário visualizar o erro
   }
 }
 
@@ -59,17 +65,7 @@ const fetchPlan = async () => {
 }
 
 const fetchCredits = async () => {
-  try {
-    // Tenta sincronizar com store primeiro
-    await aiCreditsStore.fetchBalance()
-    credits.value = {
-      plan: 'limited',
-      aiCreditsRemaining: aiCreditsStore.balance,
-    }
-  } catch {
-    // Fallback se store falhar
-    credits.value = { plan: 'limited', aiCreditsRemaining: 0 }
-  }
+  await aiCreditsStore.fetchBalance()
 }
 
 onMounted(async () => {
@@ -222,13 +218,13 @@ const statusCard = computed(() => {
              Descubra os conteúdos que você precisa reforçar
              e os pontos em que apresentou maior dificuldade.
            </p>
-           <button
-             class="btn btn-primary"
-             @click="showModal = true"
-             :disabled="store.generationStatus === 'generating'"
-           >
-             Gerar plano de estudos com IA
-           </button>
+            <button
+              class="btn btn-primary"
+              @click="showModal = true"
+              :disabled="studyPlanStore.generationStatus === 'generating'"
+            >
+              Gerar plano de estudos com IA
+            </button>
          </template>
 
          <template v-else>
@@ -237,13 +233,15 @@ const statusCard = computed(() => {
            </router-link>
          </template>
 
-          <StudyPlanGenerationLoading v-if="store.generationStatus === 'generating'" />
-          <StudyPlanGenerationModal
-            :visible="showModal"
-            :credits="credits"
-            @close="showModal = false"
-            @generate="generatePlan"
-          />
+           <StudyPlanGenerationLoading v-if="studyPlanStore.generationStatus === 'generating'" />
+           <StudyPlanGenerationModal
+             :visible="showModal"
+             :credits="credits"
+             :loading="studyPlanStore.generationStatus === 'generating'"
+             :error-message="modalError"
+             @close="showModal = false"
+             @generate="generatePlan"
+           />
       </div>
 
        <div class="flex items-center gap-4">
