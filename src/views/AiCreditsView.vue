@@ -51,7 +51,7 @@ watch(
       />
 
       <!-- Info Section -->
-      <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6">
+      <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
         <h3 class="mb-3 text-headline-sm font-headline-sm text-on-surface">O que são créditos de IA?</h3>
         <p class="text-sm text-on-surface-variant">
           Créditos de IA são utilizados para gerar análises personalizadas de seu desempenho, incluindo planos de
@@ -67,7 +67,7 @@ watch(
       />
 
       <!-- Tips Section -->
-      <section class="rounded-xl border border-outline-variant bg-secondary-container-fixed p-6">
+      <section class="rounded-xl border border-outline-variant bg-secondary-container-fixed p-6 shadow-lift">
         <div class="flex gap-3">
           <AppIcon name="lightbulb" size="lg" class="flex-shrink-0 text-on-secondary-container" />
           <div>

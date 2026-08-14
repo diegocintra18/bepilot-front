@@ -35,6 +35,7 @@ const navItems = [
   { label: 'Assinaturas', icon: 'credit-card', to: { name: 'subscriptions' }, adminOnly: true },
   { label: 'Notificações', icon: 'bell', to: { name: 'notifications' }, adminOnly: true },
   { label: 'Simulados', icon: 'timer', to: { name: 'simulation-history' } },
+  { label: 'Créditos de IA', icon: 'zap', to: { name: 'ai-credits' } },
   { label: 'Planos de estudos', icon: 'book-open', to: { name: 'study-plans' } },
 ]
 

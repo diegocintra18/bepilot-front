@@ -35,18 +35,18 @@ const getOperationIcon = (type) => {
 
 const getOperationColor = (type) => {
   if (['entrada', 'adição', 'adicionado', 'plus'].includes(type?.toLowerCase())) {
-    return 'text-success'
+    return 'text-on-tertiary-fixed-variant'
   } else if (['saida', 'remocao', 'removido', 'consumo', 'consumido'].includes(type?.toLowerCase())) {
-    return 'text-warning'
+    return 'text-on-secondary-container'
   }
   return 'text-on-surface-variant'
 }
 
 const getOperationBg = (type) => {
   if (['entrada', 'adição', 'adicionado', 'plus'].includes(type?.toLowerCase())) {
-    return 'bg-success-container'
+    return 'bg-tertiary-fixed'
   } else if (['saida', 'remocao', 'removido', 'consumo', 'consumido'].includes(type?.toLowerCase())) {
-    return 'bg-warning-container'
+    return 'bg-secondary-container'
   }
   return 'bg-surface-variant'
 }

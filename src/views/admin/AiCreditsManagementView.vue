@@ -93,7 +93,7 @@ watch(
         <!-- Left: Users Table -->
         <div class="lg:col-span-1">
           <!-- Search Bar -->
-          <div class="mb-4 flex items-center gap-2 rounded-lg border border-outline bg-surface px-3 py-2">
+          <div class="mb-4 flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2">
             <AppIcon name="search" size="md" class="text-on-surface-variant" />
             <input
               type="text"
@@ -146,7 +146,7 @@ watch(
       </div>
 
       <!-- Empty State: no user selected -->
-      <div v-else class="rounded-lg border border-outline-variant bg-surface-container-lowest p-12 text-center">
+        <div v-else class="rounded-xl border border-outline-variant bg-surface-container-lowest p-12 text-center">
         <AppIcon name="users" size="xl" class="mx-auto mb-3 text-on-surface-variant opacity-50" />
         <p class="text-on-surface-variant">Selecione um usuário na tabela para gerenciar seus créditos.</p>
       </div>
