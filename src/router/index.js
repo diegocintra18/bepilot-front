@@ -202,6 +202,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/creditos-ia',
+      name: 'ai-credits',
+      component: () => import('@/views/AiCreditsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/admin/creditos-ia',
+      name: 'admin-ai-credits',
+      component: () => import('@/views/admin/AiCreditsManagementView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: { name: 'home' },
     },

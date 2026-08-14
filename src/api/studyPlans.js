@@ -22,8 +22,4 @@ export const studyPlansApi = {
   get(id) {
     return api.get(`/study-plans/${id}`, { auth: true }).then(unwrapData)
   },
-  // fallback to subscription endpoint for ai credits info
-  getAiCredits() {
-    return api.get('/me/subscription', { auth: true }).then(unwrapData)
-  },
 }

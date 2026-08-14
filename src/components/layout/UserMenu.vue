@@ -34,6 +34,11 @@ function goToSubscription() {
   router.push({ name: 'subscription' })
 }
 
+function goToAiCredits() {
+  open.value = false
+  router.push({ name: 'ai-credits' })
+}
+
 async function logout() {
   if (loggingOut.value) return
   loggingOut.value = true
@@ -112,6 +117,15 @@ onBeforeUnmount(() => {
         >
           <AppIcon name="user" :size="18" />
           Editar perfil
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          class="flex w-full items-center gap-3 border-t border-outline-variant px-4 py-3 text-left font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+          @click="goToAiCredits"
+        >
+          <AppIcon name="zap" :size="18" />
+          Créditos de IA
         </button>
         <button
           type="button"

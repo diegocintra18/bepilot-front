@@ -15,6 +15,17 @@
       <div v-if="credits.plan === 'limited'">
         <p class="mb-2">Esta análise utilizará 1 crédito de IA.</p>
         <p class="mb-4">Créditos disponíveis: {{ credits.aiCreditsRemaining }}</p>
+
+        <!-- Insufficient Credits Warning -->
+        <div
+          v-if="!canGenerate"
+          class="mb-4 flex items-start gap-3 rounded bg-warning-container p-3 text-warning"
+        >
+          <span class="text-xl">⚠️</span>
+          <p class="text-sm">
+            Você não possui créditos suficientes para gerar um plano de estudos. Compre mais créditos para continuar.
+          </p>
+        </div>
       </div>
 
       <div v-else>
@@ -33,11 +44,12 @@
         <button
           class="btn btn-primary"
           @click="onGenerate"
-          :disabled="loading"
+          :disabled="loading || !canGenerate"
+          :title="!canGenerate ? 'Créditos insuficientes' : 'Gerar plano de estudos'"
           aria-label="Confirmar geração do plano"
         >
           <span v-if="loading" aria-live="polite">Gerando...</span>
-          <span v-else>Gerar plano</span>
+          <span v-else>{{ canGenerate ? 'Gerar plano' : 'Créditos insuficientes' }}</span>
         </button>
       </div>
 
@@ -47,15 +59,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const props = defineProps({ visible: Boolean, credits: Object })
+const props = defineProps({
+  visible: Boolean,
+  credits: Object,
+})
 const emit = defineEmits(['close', 'generate'])
 
 const loading = ref(false)
 const error = ref('')
 
+const canGenerate = computed(() => {
+  // Se plano é ilimitado, sempre pode gerar
+  if (props.credits?.plan === 'unlimited') {
+    return true
+  }
+  // Se plano é limitado, verifica se tem pelo menos 1 crédito
+  return (props.credits?.aiCreditsRemaining ?? 0) >= 1
+})
+
 async function onGenerate() {
+  if (!canGenerate.value) return
+
   loading.value = true
   error.value = ''
   try {

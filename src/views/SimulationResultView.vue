@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSimulationStore } from '@/stores/simulation'
 import { useStudyPlansStore } from '@/stores/studyPlans'
+import { useAiCreditsStore } from '@/stores/aiCredits'
 import StudyPlanGenerationModal from '@/components/study/StudyPlanGenerationModal.vue'
 import { formatDuration, formatPercentage, formatResponseTime, formatDateTime } from '@/utils/format'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -14,6 +15,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useSimulationStore()
 const studyPlanStore = useStudyPlansStore()
+const aiCreditsStore = useAiCreditsStore()
 
 const sessionId = computed(() => Number(route.params.id))
 const loading = ref(true)
@@ -38,6 +40,8 @@ const showModal = ref(false)
 const generatePlan = async () => {
   try {
     await studyPlanStore.generateStudyPlan(sessionId.value)
+    // Refetch créditos após geração bem-sucedida
+    await aiCreditsStore.fetchBalance()
     await fetchCredits()
   } catch (error) {
     // error handled by store
@@ -56,8 +60,14 @@ const fetchPlan = async () => {
 
 const fetchCredits = async () => {
   try {
-    credits.value = await studyPlanStore.getAiCredits()
+    // Tenta sincronizar com store primeiro
+    await aiCreditsStore.fetchBalance()
+    credits.value = {
+      plan: 'limited',
+      aiCreditsRemaining: aiCreditsStore.balance,
+    }
   } catch {
+    // Fallback se store falhar
     credits.value = { plan: 'limited', aiCreditsRemaining: 0 }
   }
 }
