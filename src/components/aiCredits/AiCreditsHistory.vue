@@ -93,18 +93,18 @@ const formatDate = (dateString) => {
 
     <!-- History List -->
     <div v-else class="divide-y divide-outline-variant">
-      <div v-for="item in history" :key="item.id" class="flex items-start justify-between gap-3 p-4 hover:bg-surface-variant/50">
+      <div v-for="item in history" :key="item.id" class="flex flex-col gap-3 p-4 hover:bg-surface-variant/50 sm:flex-row sm:items-start sm:justify-between">
         <div class="flex flex-1 items-start gap-3">
           <div :class="['rounded-full p-2', getOperationBg(item.type)]">
             <AppIcon :name="getOperationIcon(item.type)" :class="getOperationColor(item.type)" size="md" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="font-title-sm text-on-surface">{{ item.type }}</p>
-            <p v-if="item.description" class="text-sm text-on-surface-variant">{{ item.description }}</p>
+            <p class="break-words font-title-sm text-on-surface">{{ item.type }}</p>
+            <p v-if="item.description" class="break-words text-sm text-on-surface-variant">{{ item.description }}</p>
             <p class="text-xs text-on-surface-variant">{{ formatDate(item.createdAt || item.date) }}</p>
           </div>
         </div>
-        <div class="flex flex-col items-end gap-1">
+        <div class="flex flex-col items-start gap-1 sm:items-end">
           <span :class="['font-title-md', getOperationColor(item.type)]">
             {{ item.type?.toLowerCase().includes('entrada') || item.type?.toLowerCase().includes('adicion') ? '+' : '-' }}
             {{ Math.abs(item.amount).toLocaleString('pt-BR') }}

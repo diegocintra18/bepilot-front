@@ -68,7 +68,7 @@ watch(
 
       <!-- Tips Section -->
       <section class="rounded-xl border border-outline-variant bg-secondary-container-fixed p-6 shadow-lift">
-        <div class="flex gap-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
           <AppIcon name="lightbulb" size="lg" class="flex-shrink-0 text-on-secondary-container" />
           <div>
             <h4 class="mb-1 font-title-md text-on-secondary-container">Dica</h4>
