@@ -57,22 +57,22 @@ onMounted(() => {
       <section v-else-if="store.studyPlan">
         <div class="space-y-stack-lg">
           <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
-            <div class="flex items-start justify-between gap-4">
-              <div class="space-y-2">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-3">
                 <h3 class="font-bold">Resumo do desempenho</h3>
-                <p class="text-on-surface">{{ store.studyPlan.content?.summary?.overallAssessment }}</p>
-              </div>
-              <div class="rounded-xl bg-primary-container p-3 text-on-primary-container">
-                <p class="text-xs font-bold">Visão geral</p>
-                <p class="mt-1 text-sm">
+                <span class="rounded-full bg-primary-container px-3 py-1 text-xs font-bold text-on-primary-container">
                   {{ (store.studyPlan.content?.errors || []).length }} erros • {{ (store.studyPlan.content?.attentionPoints || []).length }} atenção
-                </p>
+                </span>
               </div>
+              <p class="text-on-surface">{{ store.studyPlan.content?.summary?.overallAssessment }}</p>
             </div>
 
             <div class="mt-6">
               <h4 class="font-semibold">Conteúdos prioritários</h4>
-              <div v-if="(store.studyPlan.content?.summary?.priorityTopics || []).length > 0" class="mt-3 flex flex-wrap gap-2">
+              <div
+                v-if="(store.studyPlan.content?.summary?.priorityTopics || []).length > 0"
+                class="mt-3 flex flex-wrap gap-2"
+              >
                 <span
                   v-for="(t, i) in store.studyPlan.content?.summary?.priorityTopics || []"
                   :key="i"
