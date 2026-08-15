@@ -224,7 +224,7 @@ const statusCard = computed(() => {
 
             <button
               type="button"
-              class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
+              class="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
               @click="showModal = true"
               :disabled="studyPlanStore.generationStatus === 'generating' || studyPlanStore.generationStatus === 'failed'"
             >
