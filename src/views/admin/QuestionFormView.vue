@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuestionsStore } from '@/stores/questions'
 import { useSubjectsStore } from '@/stores/subjects'
@@ -48,6 +48,40 @@ const fetching = ref(false)
 const loadingCourses = ref(false)
 const loadingSubjects = ref(false)
 const notFound = ref(false)
+const initializingCourses = ref(true)
+
+function getSubjectIdsForCourseIds(courseIds) {
+  if (!courseIds.length) return []
+  return subjectsStore.allSubjects
+    .filter((subject) => (subject.courses || []).some((course) => courseIds.includes(course.id)))
+    .map((subject) => subject.id)
+}
+
+function getCourseIdsForSubjectIds(subjectIds) {
+  if (!subjectIds.length) return []
+
+  const subjectById = new Map(subjectsStore.allSubjects.map((s) => [s.id, s]))
+  const courseIds = new Set()
+
+  subjectIds.forEach((subjectId) => {
+    const subject = subjectById.get(subjectId)
+    ;(subject?.courses || []).forEach((course) => courseIds.add(course.id))
+  })
+
+  return Array.from(courseIds)
+}
+
+watch(selectedCourseIds, (courseIds) => {
+  // Quando o usuário seleciona cursos, associamos automaticamente todos os assuntos
+  // que pertencem a esses cursos.
+  if (initializingCourses.value) return
+  if (!courseIds.length) return
+  form.subjectIds = getSubjectIdsForCourseIds(courseIds)
+})
+
+// Observação: não recalculamos `selectedCourseIds` a partir de `subjectIds`.
+// Um mesmo assunto pode pertencer a múltiplos cursos, então isso poderia “expandir”
+// a seleção de cursos automaticamente e deixar o usuário sem controle.
 
 const filteredSubjects = computed(() => {
   const all = subjectsStore.allSubjects
@@ -62,7 +96,7 @@ function subjectCourses(subject) {
   return names.length ? names.join(', ') : 'Sem cursos associados'
 }
 
-onMounted(async () => {
+  onMounted(async () => {
   loadingCourses.value = true
   loadingSubjects.value = true
   try {
@@ -74,7 +108,10 @@ onMounted(async () => {
     loadingSubjects.value = false
   }
 
-  if (!isEdit.value) return
+  if (!isEdit.value) {
+    initializingCourses.value = false
+    return
+  }
   fetching.value = true
   try {
     const question = await store.getQuestion(questionId.value)
@@ -89,6 +126,9 @@ onMounted(async () => {
       isCorrect: option.isCorrect,
     }))
     correctIndex.value = form.options.findIndex((option) => option.isCorrect)
+
+    // Pré-seleciona os cursos correspondentes aos assuntos já associados.
+    selectedCourseIds.value = getCourseIdsForSubjectIds(form.subjectIds)
   } catch (error) {
     if (error.kind === 'notfound') {
       notFound.value = true
@@ -97,6 +137,7 @@ onMounted(async () => {
     }
   } finally {
     fetching.value = false
+    initializingCourses.value = false
   }
 })
 
