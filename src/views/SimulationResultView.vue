@@ -36,25 +36,28 @@ const completed = computed(() => {
 
 const showModal = ref(false)
 const modalError = ref('')
+const generationError = computed(() => modalError.value)
 
 const credits = computed(() => ({
   plan: aiCreditsStore.plan,
   aiCreditsRemaining: aiCreditsStore.balance,
 }))
 
-const generatePlan = async () => {
-  modalError.value = ''
-  try {
-    await studyPlanStore.generateStudyPlan(sessionId.value)
-    // Refetch créditos após geração bem-sucedida
-    await aiCreditsStore.fetchBalance()
-    await fetchPlan()
+  const generatePlan = async () => {
+    modalError.value = ''
+    // Gerações devem ficar com o modal oculto.
     showModal.value = false
-  } catch (err) {
-    modalError.value = err?.message || 'Não foi possível gerar seu plano de estudos.'
-    // Mantém o modal aberto para o usuário visualizar o erro
+    try {
+      await studyPlanStore.generateStudyPlan(sessionId.value)
+      // Refetch créditos após geração bem-sucedida
+      await aiCreditsStore.fetchBalance()
+      await fetchPlan()
+      router.push({ name: 'study-plan-detail', params: { id: sessionId.value } })
+    } catch (err) {
+      modalError.value =
+        studyPlanStore.error || err?.message || 'Ops, ocorreu um erro ao tentar gerar o plano de estudos, tente novamente mais tarde!'
+    }
   }
-}
 
 const fetchPlan = async () => {
   try {
@@ -206,32 +209,51 @@ const statusCard = computed(() => {
 
 <ValidationMessages v-if="loadFailed" :message="store.error" />
 
-       <section
-         class="flex flex-col items-center justify-between gap-6 rounded-xl border p-6 md:flex-row md:p-8"
-         :class="statusCard.classes"
-       >
+        <section
+          class="flex flex-col items-center justify-between gap-6 rounded-xl border p-6 md:flex-row md:p-8"
+          :class="statusCard.classes"
+        >
 
-       <!-- Personalized Study Plan CTA -->
-       <div v-if="!loading && completed && hasAccess" class="w-full max-w-lg mx-auto mt-8 text-center">
-         <template v-if="!plan">
-           <p class="mb-4">
-             Descubra os conteúdos que você precisa reforçar
-             e os pontos em que apresentou maior dificuldade.
-           </p>
+        <!-- Personalized Study Plan CTA -->
+        <div v-if="!loading && completed && hasAccess" class="w-full max-w-lg mx-auto mt-8 text-left">
+          <template v-if="!plan">
+            <p class="mb-4">
+              Descubra os conteúdos que você precisa reforçar
+              e os pontos em que apresentou maior dificuldade.
+            </p>
+
             <button
-              class="btn btn-primary"
+              type="button"
+              class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
               @click="showModal = true"
-              :disabled="studyPlanStore.generationStatus === 'generating'"
+              :disabled="studyPlanStore.generationStatus === 'generating' || studyPlanStore.generationStatus === 'failed'"
             >
               Gerar plano de estudos com IA
             </button>
-         </template>
 
-         <template v-else>
-           <router-link :to="`/study-plans/${plan.id}`" class="btn btn-secondary">
-             Ver plano de estudos
-           </router-link>
-         </template>
+            <div
+              v-if="studyPlanStore.generationStatus === 'failed'"
+              class="mt-4 rounded-lg border border-error-container bg-error-container/10 p-4"
+            >
+              <p class="text-sm font-semibold text-on-error-container">
+                {{ generationError }}
+              </p>
+              <button
+                type="button"
+                class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
+                @click="generatePlan"
+                :disabled="studyPlanStore.generationStatus === 'generating'"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </template>
+
+          <template v-else>
+            <router-link :to="`/study-plans/${plan.id}`" class="btn btn-secondary">
+              Ver plano de estudos
+            </router-link>
+          </template>
 
            <StudyPlanGenerationLoading v-if="studyPlanStore.generationStatus === 'generating'" />
            <StudyPlanGenerationModal

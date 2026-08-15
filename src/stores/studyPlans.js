@@ -61,15 +61,23 @@ export const useStudyPlansStore = defineStore('studyPlans', () => {
   async function generateStudyPlan(simulationId) {
     generationStatus.value = 'generating'
     error.value = ''
+    const timeoutMs = 30000
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
     try {
-      const result = await studyPlansApi.generate(simulationId)
+      const result = await studyPlansApi.generate(simulationId, { signal: controller.signal })
       studyPlan.value = result || null
       generationStatus.value = 'completed'
       return studyPlan.value
     } catch (err) {
       generationStatus.value = 'failed'
-      error.value = err.message || 'Não foi possível gerar seu plano de estudos.'
+      error.value =
+        err?.kind === 'timeout'
+          ? 'Ops, ocorreu um erro ao tentar gerar o plano de estudos, tente novamente mais tarde!'
+          : err.message || 'Não foi possível gerar seu plano de estudos.'
       throw err
+    } finally {
+      clearTimeout(timeoutId)
     }
   }
 

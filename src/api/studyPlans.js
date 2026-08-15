@@ -10,8 +10,8 @@ function toQueryString(params = {}) {
 }
 
 export const studyPlansApi = {
-  generate(simulationId) {
-    return api.post(`/exams/${simulationId}/study-plan`, null, { auth: true }).then(unwrapData)
+  generate(simulationId, { signal } = {}) {
+    return api.post(`/exams/${simulationId}/study-plan`, null, { auth: true, signal }).then(unwrapData)
   },
   getBySimulation(simulationId) {
     return api.get(`/exams/${simulationId}/study-plan`, { auth: true }).then(unwrapData)

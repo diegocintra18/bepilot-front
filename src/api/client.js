@@ -49,7 +49,7 @@ function normalizeError(status, body) {
   return { kind: 'server', message: firstError(body) || 'Não foi possível concluir a requisição.' }
 }
 
-async function request(path, { method = 'GET', body, headers = {}, auth = false } = {}) {
+async function request(path, { method = 'GET', body, headers = {}, auth = false, signal } = {}) {
   const requestHeaders = { ...headers }
   if (body !== undefined && body !== null) {
     requestHeaders['Content-Type'] = 'application/json'
@@ -65,8 +65,12 @@ async function request(path, { method = 'GET', body, headers = {}, auth = false 
       method,
       headers: requestHeaders,
       body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
+      signal,
     })
-  } catch {
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw { kind: 'timeout', message: 'timeout' }
+    }
     throw { kind: 'network', message: 'Não foi possível conectar ao servidor. Verifique sua conexão.' }
   }
 

@@ -9,7 +9,7 @@
     >
       <h2 id="modalTitle" class="font-headline-md text-headline-md mb-3">Gerar plano de estudos?</h2>
       <p id="modalDesc" class="mb-4">
-        A IA irá analisar seu desempenho neste simulado, identificando os conteúdos que precisam ser reforçados e os pontos em que você apresentou maior dificuldade.
+        A nossa IA vai analisar os seus erros, e as perguntas em que você teve mais dificuldade para criar um plano de estudos personalizado para aumentar o seu desempenho.
       </p>
 
     <div v-if="credits.plan === 'limited'">
@@ -34,7 +34,8 @@
 
       <div class="flex justify-end gap-4">
         <button
-          class="btn btn-outlined"
+          type="button"
+          class="flex items-center justify-center rounded-lg border-2 border-primary bg-surface-container-lowest px-5 py-2.5 font-button-text text-button-text text-primary transition-colors hover:bg-primary-fixed disabled:opacity-60"
           @click="$emit('close')"
           :disabled="loading"
           aria-label="Cancelar geração do plano"
@@ -42,7 +43,8 @@
           Cancelar
         </button>
         <button
-          class="btn btn-primary"
+          type="button"
+          class="flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-60"
           @click="onGenerate"
           :disabled="loading || !canGenerate"
           :title="!canGenerate ? 'Créditos insuficientes' : 'Gerar plano de estudos'"
