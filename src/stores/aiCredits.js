@@ -6,12 +6,19 @@ export const useAiCreditsStore = defineStore('aiCredits', () => {
   // State
   const balance = ref(0)
   const plan = ref('limited')
+  const aiCreditsLimit = ref(null)
   const loading = ref(false)
   const error = ref('')
+
+  const history = ref([])
+  const historyLoading = ref(false)
+  const errorHistory = ref('')
 
   // Getters
   const isLoading = computed(() => loading.value)
   const hasError = computed(() => !!error.value)
+  const isLoadingHistory = computed(() => historyLoading.value)
+  const hasErrorHistory = computed(() => !!errorHistory.value)
 
   const canUseCredits = (amount = 1) => {
     return balance.value >= amount
@@ -25,13 +32,29 @@ export const useAiCreditsStore = defineStore('aiCredits', () => {
       const result = await aiCreditsApi.getBalance()
       const snapshot = result?.credits ?? result
       plan.value = snapshot?.plan ?? 'limited'
+      aiCreditsLimit.value = snapshot?.aiCreditsLimit ?? null
       balance.value = snapshot?.aiCreditsRemaining ?? 0
     } catch (err) {
       error.value = err.message || 'Não foi possível carregar seu saldo de créditos.'
       balance.value = 0
+      aiCreditsLimit.value = null
       plan.value = 'limited'
     } finally {
       loading.value = false
+    }
+  }
+
+  async function fetchHistory() {
+    historyLoading.value = true
+    errorHistory.value = ''
+    try {
+      const result = await aiCreditsApi.getMyHistory({ page: 1, limit: 50 })
+      history.value = result.data ?? []
+    } catch (err) {
+      errorHistory.value = err.message || 'Não foi possível carregar seu histórico.'
+      history.value = []
+    } finally {
+      historyLoading.value = false
     }
   }
 
@@ -67,16 +90,26 @@ export const useAiCreditsStore = defineStore('aiCredits', () => {
     // State
     balance,
     plan,
+    aiCreditsLimit,
     loading,
     error,
+    history,
+    historyLoading,
+    errorHistory,
     // Getters
     isLoading,
     hasError,
+    isLoadingHistory,
+    hasErrorHistory,
     canUseCredits,
     // Actions
     fetchBalance,
+    fetchHistory,
     addCredits,
     removeCredits,
     clearError,
+    clearHistoryError: () => {
+      errorHistory.value = ''
+    },
   }
 })

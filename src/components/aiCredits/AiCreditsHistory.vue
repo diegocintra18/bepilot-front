@@ -63,7 +63,7 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
-  <div class="rounded-xl border border-outline-variant bg-surface-container-lowest">
+  <div class="rounded-xl border border-outline-variant bg-surface-container-lowest shadow-lift">
     <div class="border-b border-outline-variant px-6 py-4">
       <h3 class="text-headline-md font-title-lg text-on-surface">Histórico de Movimentações</h3>
     </div>

@@ -69,4 +69,13 @@ export const aiCreditsApi = {
       .get(`/admin/users/${userId}/ia-credits/history${toQueryString(params)}`, { auth: true })
       .then(unwrapData)
   },
+
+  /**
+   * Obtém o histórico do usuário autenticado
+   */
+  getMyHistory(params = {}) {
+    return api
+      .get(`/me/ai-credits/history${toQueryString(params)}`, { auth: true })
+      .then(unwrapData)
+  },
 }

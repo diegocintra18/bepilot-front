@@ -3,26 +3,27 @@ import { onMounted, watch } from 'vue'
 import { useAiCreditsStore } from '@/stores/aiCredits'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AppIcon from '@/components/AppIcon.vue'
-import AiCreditsBalance from '@/components/aiCredits/AiCreditsBalance.vue'
 import AiCreditsHistory from '@/components/aiCredits/AiCreditsHistory.vue'
+import AiCreditsSummaryTable from '@/components/aiCredits/AiCreditsSummaryTable.vue'
 
 const store = useAiCreditsStore()
 
-const handleRefresh = async () => {
-  await store.fetchBalance()
-}
+// TODO: Substituir a URL do pagamento quando definida.
+const PAYMENT_URL = 'https://wa.me/5516991353306'
 
 onMounted(async () => {
   await store.fetchBalance()
+  await store.fetchHistory()
 })
 
 // Auto-clear error after 5 seconds
 watch(
-  () => store.error,
+  () => store.errorHistory,
   () => {
-    if (store.error) {
+    if (store.errorHistory) {
       setTimeout(() => {
-        store.clearError()
+        // keeps errorHistory scoped to history UI
+        store.clearHistoryError()
       }, 5000)
     }
   },
@@ -31,7 +32,7 @@ watch(
 
 <template>
   <AppLayout title="Créditos de IA">
-    <div class="space-y-6">
+    <div class="space-y-stack-lg">
       <!-- Header -->
       <section class="flex flex-col justify-between gap-4 border-b border-outline-variant pb-8 md:flex-row md:items-end">
         <div>
@@ -40,30 +41,40 @@ watch(
             Acompanhe seu saldo de créditos e histórico de movimentações.
           </p>
         </div>
+
+        <div class="flex justify-end">
+          <a
+            :href="PAYMENT_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex w-fit items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-button-text text-button-text font-bold text-on-primary transition-colors hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <AppIcon name="credit-card" :size="20" />
+            Comprar créditos
+          </a>
+        </div>
       </section>
 
-      <!-- Balance Card -->
-      <AiCreditsBalance
-        :balance="store.balance"
-        :is-loading="store.isLoading"
-        :error="store.error"
-        @refresh="handleRefresh"
-      />
+      <div class="grid gap-6 lg:grid-cols-2">
+        <AiCreditsSummaryTable
+          :snapshot="{ plan: store.plan, aiCreditsLimit: store.aiCreditsLimit, aiCreditsRemaining: store.balance }"
+        />
 
-      <!-- Info Section -->
-      <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
-        <h3 class="mb-3 text-headline-sm font-headline-sm text-on-surface">O que são créditos de IA?</h3>
-        <p class="text-sm text-on-surface-variant">
-          Créditos de IA são utilizados para gerar análises personalizadas de seu desempenho, incluindo planos de
-          estudo adaptados com base em suas respostas. Cada análise consome um crédito.
-        </p>
-      </section>
+        <!-- Info Section -->
+        <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
+          <h3 class="mb-3 text-headline-sm font-headline-sm text-on-surface">O que são créditos de IA?</h3>
+          <p class="text-sm text-on-surface-variant">
+            Créditos de IA são utilizados para gerar análises personalizadas de seu desempenho, incluindo planos de
+            estudo adaptados com base em suas respostas. Cada análise consome um crédito.
+          </p>
+        </section>
+      </div>
 
       <!-- History Section -->
       <AiCreditsHistory
-        :history="[]"
-        :is-loading="false"
-        error=""
+        :history="store.history"
+        :is-loading="store.isLoadingHistory"
+        :error="store.errorHistory"
       />
 
       <!-- Tips Section -->
