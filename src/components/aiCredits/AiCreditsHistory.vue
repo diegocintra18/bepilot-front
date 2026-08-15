@@ -87,7 +87,6 @@ const formatDate = (dateString) => {
 
     <!-- Empty State -->
     <div v-else-if="isEmpty" class="p-12 text-center">
-      <AppIcon name="inbox" size="xl" class="mx-auto mb-4 text-on-surface-variant opacity-50" />
       <p class="text-on-surface-variant">Nenhuma movimentação de créditos ainda.</p>
     </div>
 
