@@ -196,10 +196,28 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/books',
+      name: 'books',
+      component: () => import('@/views/BooksView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/study-plans/:id',
       name: 'study-plan-detail',
       component: () => import('@/views/StudyPlanDetailView.vue'),
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/admin/books/new',
+      name: 'book-new',
+      component: () => import('@/views/admin/BookFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/books/:id/edit',
+      name: 'book-edit',
+      component: () => import('@/views/admin/BookFormView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/creditos-ia',

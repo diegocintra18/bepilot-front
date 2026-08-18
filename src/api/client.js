@@ -51,7 +51,8 @@ function normalizeError(status, body) {
 
 async function request(path, { method = 'GET', body, headers = {}, auth = false, signal } = {}) {
   const requestHeaders = { ...headers }
-  if (body !== undefined && body !== null) {
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
+  if (body !== undefined && body !== null && !isFormData) {
     requestHeaders['Content-Type'] = 'application/json'
   }
   const token = getToken()
@@ -64,7 +65,12 @@ async function request(path, { method = 'GET', body, headers = {}, auth = false,
     response = await fetch(`${baseURL}${path}`, {
       method,
       headers: requestHeaders,
-      body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
+      body:
+        body !== undefined && body !== null
+          ? isFormData
+            ? body
+            : JSON.stringify(body)
+          : undefined,
       signal,
     })
   } catch (err) {
