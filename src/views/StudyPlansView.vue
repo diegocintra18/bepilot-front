@@ -5,7 +5,6 @@ import { useStudyPlansStore } from '@/stores/studyPlans'
 import { useRouter } from 'vue-router'
 import AppIcon from '@/components/AppIcon.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
-import { formatDate } from '@/utils/format'
 
 const store = useStudyPlansStore()
 
@@ -74,7 +73,6 @@ onMounted(() => {
             <thead class="border-b border-outline-variant">
               <tr class="font-label-caps text-label-caps text-on-surface-variant">
                 <th class="px-2 py-3">PLANO</th>
-                <th class="px-2 py-3">DATA</th>
                 <th class="px-2 py-3">STATUS</th>
                 <th class="px-2 py-3 text-right">AÇÕES</th>
               </tr>
@@ -82,7 +80,7 @@ onMounted(() => {
 
             <tbody class="font-body-md">
               <tr v-if="store.loading">
-                <td colspan="4" class="px-2 py-10 text-center">
+                <td colspan="3" class="px-2 py-10 text-center">
                   <span
                     class="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
                     role="status"
@@ -92,7 +90,7 @@ onMounted(() => {
               </tr>
 
               <tr v-else-if="store.studyPlans.length === 0">
-                <td colspan="4" class="px-2 py-10 text-center">
+                <td colspan="3" class="px-2 py-10 text-center">
                   <p class="font-body-md text-body-md text-on-surface-variant">Você ainda não possui planos de estudos.</p>
                 </td>
               </tr>
@@ -108,7 +106,6 @@ onMounted(() => {
                     {{ (plan.content?.errors || []).length }} erros • {{ (plan.content?.attentionPoints || []).length }} pontos de atenção
                   </p>
                 </td>
-                <td class="px-2 py-4 text-sm text-on-surface-variant">{{ formatDate(plan.generatedAt || plan.createdAt) }}</td>
                 <td class="px-2 py-4">
                   <span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="statusLabel(plan).classes">
                     {{ statusLabel(plan).label }}

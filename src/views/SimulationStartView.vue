@@ -134,14 +134,13 @@ onMounted(async () => {
         </div>
 
         <p
-          v-else-if="remaining !== null && remaining > 0"
-          class="mb-stack-lg flex items-center gap-2 rounded-lg bg-surface-container-low px-4 py-3 font-body-md text-body-md text-on-surface-variant"
+        v-else-if="remaining !== null && remaining > 0"
+          class="mb-stack-lg rounded-lg bg-surface-container-low px-4 py-3 font-body-md text-body-md text-on-surface-variant"
         >
-          <AppIcon name="timer" class="shrink-0 text-primary" :size="18" />
-          Você tem
-          <span class="font-bold text-on-surface">{{ remaining }}</span>
-          simulado{{ remaining === 1 ? '' : 's' }} gratuito{{ remaining === 1 ? '' : 's' }}
-          restante{{ remaining === 1 ? '' : 's' }}.
+          <AppIcon name="timer" class="mr-2 inline-flex text-primary align-middle" :size="18" />
+          <span>
+            Você tem <span class="font-bold text-on-surface">{{ remaining }}</span> simulado{{ remaining === 1 ? '' : 's' }} gratuito{{ remaining === 1 ? '' : 's' }} restante{{ remaining === 1 ? '' : 's' }}.
+          </span>
         </p>
 
         <form class="space-y-stack-lg" @submit.prevent="start">

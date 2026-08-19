@@ -28,6 +28,12 @@ function titleOf(item) {
   return `Simulado #${item.id}`
 }
 
+function truncateText(text, maxChars) {
+  if (!text) return ''
+  const str = String(text)
+  return str.length > maxChars ? `${str.slice(0, maxChars - 1)}...` : str
+}
+
 function metaOf(item) {
   const parts = []
   const totalQuestions = item.exam?.totalQuestions
@@ -107,7 +113,7 @@ onMounted(fetchHistory)
             <thead class="border-b border-outline-variant">
               <tr class="font-label-caps text-label-caps text-on-surface-variant">
                 <th class="px-2 py-3">SIMULADO</th>
-                <th class="px-2 py-3">DATA</th>
+                <th class="hidden px-2 py-3 md:table-cell">DATA</th>
                 <th class="px-2 py-3">RESULTADO</th>
                 <th class="px-2 py-3 text-right">AÇÕES</th>
               </tr>
@@ -135,10 +141,12 @@ onMounted(fetchHistory)
                 class="border-b border-surface-container transition-colors last:border-0 hover:bg-surface-container-low"
               >
                 <td class="px-2 py-4">
-                  <p class="font-bold text-on-surface">{{ titleOf(item) }}</p>
+                  <p class="font-bold text-on-surface">{{ truncateText(titleOf(item), 150) }}</p>
                   <p v-if="metaOf(item)" class="text-xs text-on-surface-variant">{{ metaOf(item) }}</p>
                 </td>
-                <td class="px-2 py-4 text-sm text-on-surface-variant">{{ formatDate(item.startedAt) }}</td>
+                <td class="hidden px-2 py-4 text-sm text-on-surface-variant md:table-cell">
+                  {{ formatDate(item.startedAt) }}
+                </td>
                 <td class="px-2 py-4">
                   <span
                     class="rounded-full px-2.5 py-1 text-xs font-bold"

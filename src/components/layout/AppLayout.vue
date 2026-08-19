@@ -133,9 +133,9 @@ async function logout() {
       </div>
     </aside>
 
-    <main class="flex h-dvh flex-1 flex-col md:ml-64">
+    <main class="flex min-h-dvh flex-1 flex-col md:ml-64">
       <header
-        class="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile md:px-12"
+        class="flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-margin-mobile md:sticky md:top-0 md:z-30 md:px-12"
       >
         <div class="flex items-center gap-4">
           <button
@@ -159,7 +159,9 @@ async function logout() {
 
       <SubscriptionAlert />
 
-      <div class="flex-1 overflow-y-auto overscroll-y-contain overflow-x-hidden p-margin-mobile md:p-12 [-webkit-overflow-scrolling:touch]">
+      <div
+        class="flex-1 overflow-y-auto overscroll-y-contain overflow-x-hidden px-margin-mobile pt-margin-mobile pb-[calc(16px+env(safe-area-inset-bottom))] md:p-12 [-webkit-overflow-scrolling:touch]"
+      >
         <div class="mx-auto w-full max-w-container-max-width">
           <slot />
         </div>
