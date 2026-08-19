@@ -37,7 +37,6 @@ export async function generateStudyPlanPdf(plan, options = {}) {
           header { display:flex; justify-content:space-between; align-items:center }
           header img { height:48px }
           hr { border:none; border-top:1px solid #e5e7eb; margin:16px 0 }
-          footer { position:fixed; bottom:20px; left:24px; right:24px; text-align:left; font-size:12px; color:#6b7280 }
           .section { margin-bottom:18px }
           .title { font-size:20px; font-weight:700; margin-bottom:8px }
           .badge { display:inline-block; background:#2563EB22; color:#1D4ED8; font-weight:700; font-size:12px; padding:6px 10px; border-radius:999px; margin-left:10px }
@@ -126,10 +125,6 @@ export async function generateStudyPlanPdf(plan, options = {}) {
             ${(plan.content?.attentionPoints || []).length === 0 ? `<p class="muted" style="margin-top:8px">Não identificamos pontos de atenção relacionados ao tempo de resposta neste simulado.</p>` : ''}
           </div>
         </main>
-        <footer>
-          <hr />
-          <a href="${logoHref}">vouserpiloto.com.br</a>
-        </footer>
       </body>
     </html>
   `
