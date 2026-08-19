@@ -1,5 +1,10 @@
 <script setup>
+import router from '@/router/index.js';
 import AppIcon from './AppIcon.vue'
+
+const redirectToRegister = () => {
+  router.push('/register')
+}
 </script>
 
 <template>
@@ -41,21 +46,16 @@ import AppIcon from './AppIcon.vue'
         </h1>
 
         <p class="font-body-lg text-body-lg mb-8 max-w-lg text-on-primary-container">
-          Simulados atualizados para PPA, PPH, PC e IFR. Estude com questões reais e análise de desempenho avançada.
+          Simulados atualizados para PPA, PPH, PCH, CMS e etc. Estude com questões reais e análise de desempenho avançada.
         </p>
 
         <div class="flex flex-col gap-4 sm:flex-row">
           <button
             type="button"
             class="cursor-pointer rounded-lg bg-secondary-container px-8 py-4 font-button-text text-button-text text-on-secondary-container shadow-lg transition-transform hover:bg-secondary-fixed-dim active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-secondary-container"
+            @click="redirectToRegister"
           >
             Começar Agora
-          </button>
-          <button
-            type="button"
-            class="cursor-pointer rounded-lg border border-white/30 bg-white/10 px-8 py-4 font-button-text text-button-text text-on-primary backdrop-blur-sm transition-all hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-primary"
-          >
-            Ver Planos
           </button>
         </div>
       </div>

@@ -35,6 +35,12 @@ const router = createRouter({
       meta: { guestOnly: true, title: 'Redefinir Senha' },
     },
     {
+      path: '/sucesso',
+      name: 'signup-success',
+      component: () => import('@/views/SignupSuccessView.vue'),
+      meta: { requiresAuth: true, title: 'Cadastro realizado com sucesso' },
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/DashboardView.vue'),

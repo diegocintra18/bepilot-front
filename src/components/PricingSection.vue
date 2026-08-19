@@ -1,26 +1,26 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from './AppIcon.vue'
+import router from '@/router/index.js'
 
 const auth = useAuthStore()
 
 function redirectToCheckout() {
-  window.location.assign(auth.buildCheckoutUrl())
+  router.push('/register')
 }
 
 const basicPlan = [
-  { label: 'Acesso a 1 curso (PPA ou PPH)', available: true },
-  { label: 'Simulados limitados (10/mês)', available: true },
-  { label: 'Questões Comentadas', available: false },
-  { label: 'Suporte via WhatsApp', available: false },
+  { label: 'Simulados ilimitados', available: true },
+  { label: 'Questões Comentadas', available: true },
+  { label: 'Gere até 10 planos de estudos com base nos simulados', available: true },
+  { label: 'Suporte via WhatsApp', available: true },
 ]
 
 const proPlan = [
-  { label: 'Acesso Ilimitado (PPA, PPH, PC, IFR)', available: true, highlighted: false },
-  { label: 'Simulados Ilimitados', available: true, highlighted: false },
-  { label: 'Questões Comentadas em Vídeo', available: true, highlighted: true },
-  { label: 'Estatísticas de Performance', available: true, highlighted: false },
-  { label: 'Suporte Prioritário', available: true, highlighted: false },
+  { label: 'Simulados ilimitados', available: true },
+  { label: 'Questões Comentadas', available: true },
+  { label: 'Gere planos de estudos ilimitados com base nos simulados', available: true, benefit: true },
+  { label: 'Suporte via WhatsApp', available: true },
 ]
 </script>
 
@@ -42,7 +42,7 @@ const proPlan = [
             <h3 class="font-headline-md text-headline-md text-primary">Plano Básico</h3>
             <div class="mt-2 flex items-baseline gap-1">
               <span class="font-body-md text-body-md text-on-surface-variant">R$</span>
-              <span class="text-4xl font-bold text-primary">49</span>
+              <span class="text-4xl font-bold text-primary">34,90</span>
               <span class="font-body-md text-body-md text-on-surface-variant">/mês</span>
             </div>
           </div>
@@ -69,7 +69,7 @@ const proPlan = [
             class="w-full cursor-pointer rounded-lg border-2 border-primary py-3 font-button-text text-button-text text-primary transition-all hover:bg-primary-container hover:text-on-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             @click="redirectToCheckout"
           >
-            Assinar Básico
+            Fazer teste grátis
           </button>
         </div>
 
@@ -86,7 +86,7 @@ const proPlan = [
             <h3 class="font-headline-md text-headline-md text-primary">Plano Pro</h3>
             <div class="mt-2 flex items-baseline gap-1">
               <span class="font-body-md text-body-md text-on-surface-variant">R$</span>
-              <span class="text-4xl font-bold text-primary">89</span>
+              <span class="text-4xl font-bold text-primary">79,00</span>
               <span class="font-body-md text-body-md text-on-surface-variant">/mês</span>
             </div>
           </div>
@@ -108,7 +108,7 @@ const proPlan = [
             class="w-full cursor-pointer rounded-lg bg-primary py-4 font-button-text text-button-text text-on-primary shadow-lg transition-all hover:bg-primary-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             @click="redirectToCheckout"
           >
-            Assinar Pro Agora
+            Fazer teste grátis
           </button>
         </div>
       </div>

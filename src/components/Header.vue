@@ -12,8 +12,6 @@ const mobileOpen = ref(false)
 const navLinks = [
   { label: 'Dashboard', active: true },
   { label: 'Simulados', active: false },
-  { label: 'Matérias', active: false },
-  { label: 'Histórico', active: false },
 ]
 
 function goToAccount() {

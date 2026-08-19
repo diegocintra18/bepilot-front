@@ -1,4 +1,5 @@
 <script setup>
+import router from '@/router/index.js';
 import AppIcon from './AppIcon.vue'
 </script>
 
@@ -24,8 +25,7 @@ import AppIcon from './AppIcon.vue'
             </div>
             <h3 class="font-headline-md text-headline-md mb-2 text-primary">Questões Comentadas</h3>
             <p class="font-body-md text-body-md text-on-surface-variant">
-              Não apenas responda, entenda o porquê. Nossos instrutores detalham cada alternativa das
-              questões oficiais da ANAC para que você aprenda de verdade.
+              Não apenas responda, entenda o porquê. Todas as perguntas possuem respostas comentadas para aumentar seu embasamento teórico.
             </p>
           </div>
 
@@ -77,7 +77,7 @@ import AppIcon from './AppIcon.vue'
           </div>
           <h3 class="font-headline-md text-headline-md mb-2 text-primary">Simulados Ilimitados</h3>
           <p class="font-body-md text-body-md text-on-surface-variant">
-            Gere quantos simulados desejar. Nosso banco de dados é atualizado semanalmente com novos reportes.
+            Gere quantos simulados desejar. Nosso banco de dados é atualizado frequentemente com novas questões.
           </p>
         </div>
 
@@ -87,14 +87,14 @@ import AppIcon from './AppIcon.vue'
           <div class="order-2 flex-1 md:order-1">
             <h3 class="font-headline-md text-headline-md mb-2">Estude onde quiser</h3>
             <p class="mb-4 font-body-md text-body-md opacity-90">
-              Nossa plataforma é 100% responsiva. Pratique no computador, tablet ou celular durante seus
-              deslocamentos.
+              Nossa plataforma é 100% adaptável. Pratique no computador, tablet ou celular.
             </p>
             <button
               type="button"
               class="cursor-pointer rounded-lg bg-surface-container-lowest px-6 py-2 font-button-text text-button-text text-primary transition-colors hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-primary"
+              @click="router.push('/register')"
             >
-              Acessar WebApp
+              Começar agora
             </button>
           </div>
 
