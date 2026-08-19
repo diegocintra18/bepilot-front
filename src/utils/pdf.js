@@ -35,7 +35,7 @@ export async function generateStudyPlanPdf(plan, options = {}) {
         <style>
           body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial; color:#111827; padding:24px }
           header { display:flex; justify-content:space-between; align-items:center }
-          header img { height:48px }
+          header img { height:36px }
           hr { border:none; border-top:1px solid #e5e7eb; margin:16px 0 }
           .section { margin-bottom:18px }
           .title { font-size:20px; font-weight:700; margin-bottom:8px }
@@ -57,7 +57,7 @@ export async function generateStudyPlanPdf(plan, options = {}) {
         </header>
         <hr />
         <main>
-          <h1 class="title">Plano de Estudos com IA</h1>
+          <h1 class="title">Plano de Estudos</h1>
 
           <div class="section">
             <strong>Simulado:</strong> ${plan.simulation?.name || `#${plan.simulationId || plan.id}`}
