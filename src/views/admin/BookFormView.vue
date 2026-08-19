@@ -33,21 +33,6 @@ const loading = ref(false)
 const fetching = ref(false)
 const loadingCourses = ref(false)
 const notFound = ref(false)
-const uploading = ref(false)
-
-async function uploadCover(file) {
-  if (!file) return
-  uploading.value = true
-  apiError.value = ''
-  try {
-    const result = await store.uploadCover(file)
-    form.coverImageUrl = result.coverImageUrl || ''
-  } catch (error) {
-    apiError.value = error.message || 'Não foi possível fazer upload da capa.'
-  } finally {
-    uploading.value = false
-  }
-}
 
 onMounted(async () => {
   loadingCourses.value = true
@@ -94,7 +79,7 @@ function validate() {
     valid = false
   }
   if (!form.coverImageUrl.trim()) {
-    fieldErrors.coverImageUrl = 'Faça upload da imagem de capa.'
+    fieldErrors.coverImageUrl = 'Informe a URL da imagem de capa.'
     valid = false
   }
   if (!form.link.trim()) {
@@ -251,17 +236,18 @@ async function submit() {
           </div>
 
           <div>
-            <span class="mb-stack-sm block font-button-text text-button-text text-on-surface">Imagem de capa</span>
+            <span class="mb-stack-sm block font-button-text text-button-text text-on-surface">URL da imagem de capa</span>
             <div class="flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-container-lowest p-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="flex-1">
                 <input
-                  type="file"
-                  accept="image/*"
-                  class="w-full text-on-surface-variant"
-                  @change="(e) => uploadCover(e.target.files?.[0])"
+                  v-model="form.coverImageUrl"
+                  type="url"
+                  name="coverImageUrl"
+                  autocomplete="off"
+                  placeholder="https://..."
+                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                 >
                 <p v-if="fieldErrors.coverImageUrl" class="mt-stack-sm text-sm font-medium text-error">{{ fieldErrors.coverImageUrl }}</p>
-                <p v-if="uploading" class="mt-stack-sm text-sm text-on-surface-variant">Enviando imagem...</p>
               </div>
               <div class="shrink-0">
                 <img
