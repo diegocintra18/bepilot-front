@@ -13,10 +13,10 @@
     @apply bg-canvas font-sans text-on-background;
   }
 
-  html,
-  body {
-    overscroll-behavior-y: none;
-  }
+html,
+body {
+  overscroll-behavior-y: auto;
+}
 
   @media (prefers-reduced-motion: reduce) {
     html {

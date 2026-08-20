@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AppIcon from '@/components/AppIcon.vue'
@@ -19,10 +19,54 @@ const router = useRouter()
 const auth = useAuthStore()
 const mobileOpen = ref(false)
 const loggingOut = ref(false)
+const scrollContainerRef = ref(null)
+
+function isVerticallyScrollable(el) {
+  return el.scrollHeight > el.clientHeight + 1
+}
+
+function hasNestedScrollableY(target, container) {
+  let node = target
+  while (node && node !== container) {
+    if (node instanceof HTMLElement) {
+      const style = getComputedStyle(node)
+      if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && isVerticallyScrollable(node)) {
+        return true
+      }
+    }
+    node = node.parentElement
+  }
+  return false
+}
+
+function handleWheel(e) {
+  const container = scrollContainerRef.value
+  if (!container) return
+  if (!container.contains(e.target)) return
+  if (!isVerticallyScrollable(container)) return
+  if (hasNestedScrollableY(e.target, container)) return
+
+  // Garante scroll com a rodinha mesmo quando o foco está em elementos dentro do container.
+  e.preventDefault()
+  container.scrollTop += e.deltaY
+}
 
 onMounted(() => {
   if (auth.isAuthenticated && !auth.isAdmin && !auth.subscription) {
     auth.fetchSubscription().catch(() => {})
+  }
+
+  // Garantia de rolagem por wheel no container principal (overflow-y-auto).
+  const container = scrollContainerRef.value
+  if (container) {
+    container.addEventListener('wheel', handleWheel, { passive: false })
+  }
+})
+
+onBeforeUnmount(() => {
+  const container = scrollContainerRef.value
+  if (container) {
+    container.removeEventListener('wheel', handleWheel)
   }
 })
 
@@ -160,7 +204,9 @@ async function logout() {
       <SubscriptionAlert />
 
       <div
-        class="flex-1 overflow-y-auto overscroll-y-contain overflow-x-hidden px-margin-mobile pt-margin-mobile pb-[calc(16px+env(safe-area-inset-bottom))] md:p-12 [-webkit-overflow-scrolling:touch]"
+        ref="scrollContainerRef"
+        class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-margin-mobile pt-margin-mobile pb-[calc(16px+env(safe-area-inset-bottom))] md:p-12 [-webkit-overflow-scrolling:touch]"
+        role="region"
       >
         <div class="mx-auto w-full max-w-container-max-width">
           <slot />

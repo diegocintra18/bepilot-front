@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuestionsStore } from '@/stores/questions'
 import { useSubjectsStore } from '@/stores/subjects'
@@ -41,6 +41,7 @@ const form = reactive({
 })
 const correctIndex = ref(-1)
 const selectedCourseIds = ref([])
+const lastManualSubjectIds = ref([])
 const fieldErrors = reactive({ statement: '', explanation: '', subjectIds: '', options: '' })
 const apiError = ref('')
 const loading = ref(false)
@@ -71,13 +72,9 @@ function getCourseIdsForSubjectIds(subjectIds) {
   return Array.from(courseIds)
 }
 
-watch(selectedCourseIds, (courseIds) => {
-  // Quando o usuário seleciona cursos, associamos automaticamente todos os assuntos
-  // que pertencem a esses cursos.
-  if (initializingCourses.value) return
-  if (!courseIds.length) return
-  form.subjectIds = getSubjectIdsForCourseIds(courseIds)
-})
+// Importante: ao selecionar/remover cursos, não auto-selecionamos assuntos.
+// Mantemos apenas o que já está associado em `form.subjectIds` e isso fica editável
+// apenas na lista de assuntos filtrada.
 
 // Observação: não recalculamos `selectedCourseIds` a partir de `subjectIds`.
 // Um mesmo assunto pode pertencer a múltiplos cursos, então isso poderia “expandir”
@@ -90,6 +87,35 @@ const filteredSubjects = computed(() => {
     (subject.courses || []).some((course) => selectedCourseIds.value.includes(course.id)),
   )
 })
+
+// Se o usuário mudar o filtro de cursos, não devemos auto-mudar a seleção de assuntos.
+// Mantemos um snapshot do que o usuário marcou e restauramos caso algum re-render cause
+// “seleção em massa” de assuntos.
+watch(
+  () => form.subjectIds,
+  (next) => {
+    lastManualSubjectIds.value = [...next]
+  },
+  { deep: true },
+)
+
+watch(selectedCourseIds, () => {
+  if (initializingCourses.value) return
+  form.subjectIds = [...lastManualSubjectIds.value]
+})
+
+function autoResizeTextarea(el) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
+function autoResizeAllTextareas() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const root = document.querySelector('form')
+  if (!root) return
+  root.querySelectorAll('textarea').forEach((t) => autoResizeTextarea(t))
+}
 
 function subjectCourses(subject) {
   const names = (subject.courses || []).map((course) => course.name)
@@ -110,6 +136,8 @@ function subjectCourses(subject) {
 
   if (!isEdit.value) {
     initializingCourses.value = false
+    await nextTick()
+    autoResizeAllTextareas()
     return
   }
   fetching.value = true
@@ -129,6 +157,10 @@ function subjectCourses(subject) {
 
     // Pré-seleciona os cursos correspondentes aos assuntos já associados.
     selectedCourseIds.value = getCourseIdsForSubjectIds(form.subjectIds)
+
+    await nextTick()
+    lastManualSubjectIds.value = [...form.subjectIds]
+    autoResizeAllTextareas()
   } catch (error) {
     if (error.kind === 'notfound') {
       notFound.value = true
@@ -267,7 +299,8 @@ async function submit() {
                 rows="3"
                 placeholder="Enunciado da questão"
                 :aria-describedby="error ? `${id}-error` : undefined"
-                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                @input="autoResizeTextarea($event.target)"
               />
             </template>
           </FormField>
@@ -281,7 +314,8 @@ async function submit() {
                 rows="3"
                 placeholder="Explicação mostrada ao aluno após responder"
                 :aria-describedby="error ? `${id}-error` : undefined"
-                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                @input="autoResizeTextarea($event.target)"
               />
             </template>
           </FormField>
@@ -444,14 +478,14 @@ async function submit() {
                   >
                   Correta
                 </label>
-                <input
+                <textarea
                   v-model="option.description"
-                  type="text"
                   :name="`option-${index}`"
-                  autocomplete="off"
+                  rows="1"
                   :placeholder="`Opção ${index + 1}`"
-                  class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                >
+                  class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                  @input="autoResizeTextarea($event.target)"
+                />
               </div>
             </div>
             <p v-if="fieldErrors.options" id="options-error" role="alert" class="mt-stack-sm text-body-md font-medium text-error">
