@@ -73,6 +73,21 @@ function changeCourse() {
   store.setCourse(courseFilter.value)
 }
 
+function clearFilters() {
+  searchInput.value = ''
+  difficultyFilter.value = ''
+  statusFilter.value = ''
+  subjectFilter.value = ''
+  courseFilter.value = ''
+  store.filters.search = ''
+  store.filters.difficulty = ''
+  store.filters.status = ''
+  store.filters.subjectId = ''
+  store.filters.courseId = ''
+  store.filters.page = 1
+  store.fetchQuestions()
+}
+
 function askDelete(question) {
   actionError.value = ''
   confirmDelete.value = question
@@ -132,11 +147,13 @@ async function handleDelete() {
               type="search"
               name="search"
               placeholder="Buscar por enunciado..."
+              :disabled="store.loading"
               class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
             >
             <button
               type="submit"
               class="flex shrink-0 items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+              :disabled="store.loading"
             >
               <AppIcon name="search" :size="18" />
               Buscar
@@ -148,6 +165,7 @@ async function handleDelete() {
               Dificuldade
               <select
                 v-model="difficultyFilter"
+                :disabled="store.loading"
                 class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                 @change="changeDifficulty"
               >
@@ -162,6 +180,7 @@ async function handleDelete() {
               Status
               <select
                 v-model="statusFilter"
+                :disabled="store.loading"
                 class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                 @change="changeStatus"
               >
@@ -175,6 +194,7 @@ async function handleDelete() {
               Assunto
               <select
                 v-model="subjectFilter"
+                :disabled="store.loading"
                 class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                 @change="changeSubject"
               >
@@ -189,6 +209,7 @@ async function handleDelete() {
               Curso
               <select
                 v-model="courseFilter"
+                :disabled="store.loading"
                 class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
                 @change="changeCourse"
               >
@@ -201,7 +222,18 @@ async function handleDelete() {
           </div>
         </div>
 
-        <ValidationMessages :message="actionError" class="mt-stack-md" />
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <ValidationMessages :message="actionError" class="mt-stack-md" />
+          <button
+            type="button"
+            class="rounded-lg border border-outline-variant px-4 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+            :disabled="store.loading"
+            @click="clearFilters"
+          >
+            Limpar filtros
+          </button>
+        </div>
+
         <ValidationMessages v-if="store.error && !store.loading" :message="store.error" class="mt-stack-md" />
 
         <div class="mt-stack-lg overflow-x-auto">
