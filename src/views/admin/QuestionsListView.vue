@@ -220,7 +220,7 @@ async function handleDelete() {
           </label>
         </div>
 
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-5">
           <ValidationMessages :message="actionError" class="mt-stack-md" />
           <button
             type="button"
