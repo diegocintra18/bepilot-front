@@ -236,7 +236,7 @@ async function handleDelete() {
 
         <ValidationMessages v-if="store.error && !store.loading" :message="store.error" class="mt-stack-md" />
 
-        <div class="mt-stack-lg overflow-x-auto">
+        <div class="mt-stack-lg overflow-x-auto md:overflow-x-visible">
           <table class="w-full text-left">
             <thead class="border-b border-outline-variant">
               <tr class="font-label-caps text-label-caps text-on-surface-variant">
