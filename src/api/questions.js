@@ -9,6 +9,14 @@ export const questionsApi = {
     const query = qs.toString()
     return api.get(`/questions${query ? `?${query}` : ''}`)
   },
+  listAdmin(params = {}) {
+    const qs = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') qs.set(key, value)
+    })
+    const query = qs.toString()
+    return api.get(`/questions/admin${query ? `?${query}` : ''}`, { auth: true })
+  },
   get(id) {
     return api.get(`/questions/${id}`).then(unwrapData)
   },
@@ -20,5 +28,8 @@ export const questionsApi = {
   },
   remove(id) {
     return api.delete(`/questions/${id}`, { auth: true }).then(unwrapData)
+  },
+  generateAIBatch(payload) {
+    return api.post('/questions/admin/ai-batch/generate', payload, { auth: true }).then(unwrapData)
   },
 }

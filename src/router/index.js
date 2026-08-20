@@ -119,6 +119,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Admin: Questões' },
     },
     {
+      path: '/admin/questions/ai-generate',
+      name: 'questions-ai-generate',
+      component: () => import('@/views/admin/QuestionsAIGeneratorView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Admin: Gerar Questões com IA' },
+    },
+    {
       path: '/admin/questions/new',
       name: 'question-new',
       component: () => import('@/views/admin/QuestionFormView.vue'),

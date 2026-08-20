@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useQuestionsStore } from '@/stores/questions'
+import { useRoute } from 'vue-router'
+import { useAdminQuestionsStore } from '@/stores/adminQuestions'
 import { useSubjectsStore } from '@/stores/subjects'
 import { useCoursesStore } from '@/stores/courses'
 import { QUESTION_DIFFICULTY_LABELS, QUESTION_DIFFICULTY_OPTIONS, QUESTION_DIFFICULTY_CLASSES } from '@/constants/questions'
@@ -9,7 +10,8 @@ import AppIcon from '@/components/AppIcon.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import ValidationMessages from '@/components/auth/ValidationMessages.vue'
 
-const store = useQuestionsStore()
+const route = useRoute()
+const store = useAdminQuestionsStore()
 const subjectsStore = useSubjectsStore()
 const coursesStore = useCoursesStore()
 
@@ -37,6 +39,12 @@ function subjectNames(question) {
 }
 
 onMounted(async () => {
+  const initialStatus = route.query.status
+  if (initialStatus === 'inactive' || initialStatus === 'active') {
+    store.filters.status = initialStatus
+    statusFilter.value = initialStatus
+  }
+
   store.fetchQuestions()
   try {
     await Promise.all([subjectsStore.fetchAllSubjects(), coursesStore.fetchAllCourses()])
@@ -105,6 +113,14 @@ async function handleDelete() {
         >
           <AppIcon name="plus-circle" :size="20" />
           Nova Questão
+        </RouterLink>
+
+        <RouterLink
+          :to="{ name: 'questions-ai-generate' }"
+          class="flex w-fit items-center gap-2 rounded-lg bg-secondary-container px-5 py-2.5 font-button-text text-button-text font-bold text-on-secondary-container transition-colors hover:bg-secondary-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          <AppIcon name="lightbulb" :size="20" />
+          Gerar com IA
         </RouterLink>
       </section>
 
@@ -249,6 +265,14 @@ async function handleDelete() {
                     "
                   >
                     {{ question.status === 'active' ? 'Ativa' : 'Inativa' }}
+                  </span>
+
+                  <span
+                    v-if="question.aiGenerated"
+                    class="ml-2 rounded-full px-2.5 py-1 text-xs font-bold bg-primary text-on-primary"
+                    title="Criada com IA"
+                  >
+                    IA
                   </span>
                 </td>
                 <td class="px-2 py-4">
