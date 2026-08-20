@@ -140,8 +140,8 @@ async function handleDelete() {
       </section>
 
       <section class="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-lift">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <form class="flex w-full max-w-md gap-2" role="search" @submit.prevent="applySearch">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+          <form class="flex w-full gap-2 md:col-span-6" role="search" @submit.prevent="applySearch">
             <input
               v-model="searchInput"
               type="search"
@@ -160,66 +160,64 @@ async function handleDelete() {
             </button>
           </form>
 
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
-            <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
-              Dificuldade
-              <select
-                v-model="difficultyFilter"
-                :disabled="store.loading"
-                class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                @change="changeDifficulty"
-              >
-                <option value="">Todas as dificuldades</option>
-                <option v-for="option in QUESTION_DIFFICULTY_OPTIONS" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
-            </label>
+          <label class="flex flex-col gap-1 font-button-text text-button-text text-on-surface-variant md:col-span-3">
+            Dificuldade
+            <select
+              v-model="difficultyFilter"
+              :disabled="store.loading"
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              @change="changeDifficulty"
+            >
+              <option value="">Todas as dificuldades</option>
+              <option v-for="option in QUESTION_DIFFICULTY_OPTIONS" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </label>
 
-            <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
-              Status
-              <select
-                v-model="statusFilter"
-                :disabled="store.loading"
-                class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                @change="changeStatus"
-              >
-                <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
-            </label>
+          <label class="flex flex-col gap-1 font-button-text text-button-text text-on-surface-variant md:col-span-3">
+            Status
+            <select
+              v-model="statusFilter"
+              :disabled="store.loading"
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              @change="changeStatus"
+            >
+              <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </label>
 
-            <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
-              Assunto
-              <select
-                v-model="subjectFilter"
-                :disabled="store.loading"
-                class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                @change="changeSubject"
-              >
-                <option value="">Todos os assuntos</option>
-                <option v-for="subject in subjectsStore.allSubjects" :key="subject.id" :value="String(subject.id)">
-                  {{ subject.name }}
-                </option>
-              </select>
-            </label>
+          <label class="flex flex-col gap-1 font-button-text text-button-text text-on-surface-variant md:col-span-6">
+            Assunto
+            <select
+              v-model="subjectFilter"
+              :disabled="store.loading"
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              @change="changeSubject"
+            >
+              <option value="">Todos os assuntos</option>
+              <option v-for="subject in subjectsStore.allSubjects" :key="subject.id" :value="String(subject.id)">
+                {{ subject.name }}
+              </option>
+            </select>
+          </label>
 
-            <label class="flex items-center gap-2 font-button-text text-button-text text-on-surface-variant">
-              Curso
-              <select
-                v-model="courseFilter"
-                :disabled="store.loading"
-                class="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                @change="changeCourse"
-              >
-                <option value="">Todos os cursos</option>
-                <option v-for="course in coursesStore.allCourses" :key="course.id" :value="String(course.id)">
-                  {{ course.code }} — {{ course.name }}
-                </option>
-              </select>
-            </label>
-          </div>
+          <label class="flex flex-col gap-1 font-button-text text-button-text text-on-surface-variant md:col-span-6">
+            Curso
+            <select
+              v-model="courseFilter"
+              :disabled="store.loading"
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              @change="changeCourse"
+            >
+              <option value="">Todos os cursos</option>
+              <option v-for="course in coursesStore.allCourses" :key="course.id" :value="String(course.id)">
+                {{ course.code }} — {{ course.name }}
+              </option>
+            </select>
+          </label>
         </div>
 
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
