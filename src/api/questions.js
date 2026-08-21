@@ -30,6 +30,9 @@ export const questionsApi = {
     return api.delete(`/questions/${id}`, { auth: true }).then(unwrapData)
   },
   generateAIBatch(payload) {
-    return api.post('/questions/admin/ai-batch/generate', payload, { auth: true }).then(unwrapData)
+    return api.post('/questions/admin/ai-batch/generate', {
+      ...payload,
+      aiProvider: payload.aiProvider || 'openai'
+    }, { auth: true }).then(unwrapData)
   },
 }

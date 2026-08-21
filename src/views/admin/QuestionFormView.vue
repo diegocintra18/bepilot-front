@@ -544,10 +544,3 @@ async function submit() {
     </div>
   </AppLayout>
 </template>
-itButton>
-          </div>
-        </form>
-      </section>
-    </div>
-  </AppLayout>
-</template>

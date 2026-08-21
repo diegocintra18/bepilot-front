@@ -26,6 +26,7 @@ const form = reactive({
   quantity: 5,
   difficulty: 'medium',
   topic: '',
+  aiProvider: 'openai',
 })
 
 const filteredSubjects = computed(() => {
@@ -58,6 +59,7 @@ async function submit() {
       quantity: Number(form.quantity),
       difficulty: form.difficulty,
       topic: form.topic.trim() ? form.topic.trim() : null,
+      aiProvider: form.aiProvider,
     })
 
     // Não precisamos aguardar; direcionamos para a área de revisão (inativas).
@@ -159,6 +161,16 @@ watch(
               <option v-for="opt in QUESTION_DIFFICULTY_OPTIONS" :key="opt.value" :value="opt.value">
                 {{ opt.label }}
               </option>
+            </select>
+          </FormField>
+
+          <FormField label="Provedor de IA" name="aiProvider">
+            <select
+              v-model="form.aiProvider"
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2.5 font-body-md text-body-md text-on-background focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+            >
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="gemini">Google Gemini</option>
             </select>
           </FormField>
 
