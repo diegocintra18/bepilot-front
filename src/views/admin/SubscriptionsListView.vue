@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
 import {
   PROVIDER_LABELS,
@@ -15,6 +15,7 @@ import ModalDialog from '@/components/admin/ModalDialog.vue'
 import FormField from '@/components/auth/FormField.vue'
 
 const route = useRoute()
+const router = useRouter()
 const store = useSubscriptionsStore()
 
 const statusFilter = ref(store.filters.status)
@@ -109,13 +110,7 @@ function applyExpiresBefore() {
 }
 
 function openActivate(subscription) {
-  actionError.value = ''
-  activateForm.expiresAt = ''
-  activateForm.justification = ''
-  activateErrors.expiresAt = ''
-  activateErrors.justification = ''
-  modal.type = 'activate'
-  modal.subscription = subscription
+  router.push({ name: 'subscription-choose-plan', params: { id: subscription.id } })
 }
 
 function openCancel(subscription) {
@@ -444,7 +439,7 @@ const modalDescription = computed(() => {
                       v-if="subscription.status !== 'active' && subscription.status !== 'cancelled'"
                       type="button"
                       class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
-                      :aria-label="`Ativar assinatura ${subscription.id}`"
+                      :aria-label="`Ativar plano ${subscription.id}`"
                       @click="openActivate(subscription)"
                     >
                       <AppIcon name="check-circle" :size="18" />

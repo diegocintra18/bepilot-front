@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
 import {
   PROVIDER_LABELS,
@@ -15,6 +15,7 @@ import FormField from '@/components/auth/FormField.vue'
 import ModalDialog from '@/components/admin/ModalDialog.vue'
 
 const route = useRoute()
+const router = useRouter()
 const store = useSubscriptionsStore()
 
 const subscriptionId = computed(() => Number(route.params.id))
@@ -75,13 +76,8 @@ function actionLabel(action) {
 }
 
 function openActivate() {
-  actionError.value = ''
-  actionSuccess.value = ''
-  activateForm.expiresAt = ''
-  activateForm.justification = ''
-  activateErrors.expiresAt = ''
-  activateErrors.justification = ''
-  modal.type = 'activate'
+  if (!subscription.value) return
+  router.push({ name: 'subscription-choose-plan', params: { id: subscription.value.id } })
 }
 
 function openCancel() {
@@ -227,16 +223,16 @@ function changedValue(record, key) {
           <AppIcon name="chevron-left" :size="18" />
           Voltar para assinaturas
         </RouterLink>
-        <div v-if="subscription && !notFound" class="flex flex-wrap items-center gap-2">
-          <button
-            v-if="subscription.status !== 'active' && subscription.status !== 'cancelled'"
-            type="button"
-            class="flex items-center gap-2 rounded-lg border border-outline-variant px-5 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
-            @click="openActivate"
-          >
-            <AppIcon name="check-circle" :size="18" />
-            Ativar
-          </button>
+          <div v-if="subscription && !notFound" class="flex flex-wrap items-center gap-2">
+            <button
+              v-if="subscription.status !== 'active' && subscription.status !== 'cancelled'"
+              type="button"
+              class="flex items-center gap-2 rounded-lg border border-outline-variant px-5 py-2.5 font-button-text text-button-text text-on-surface transition-colors hover:bg-surface-container-low"
+              @click="openActivate"
+            >
+              <AppIcon name="check-circle" :size="18" />
+              Ativar plano
+            </button>
           <button
             v-if="subscription.status === 'active'"
             type="button"

@@ -185,6 +185,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Admin: Editar Assinatura' },
     },
     {
+      path: '/admin/subscriptions/:id/choose-plan',
+      name: 'subscription-choose-plan',
+      component: () => import('@/views/admin/SubscriptionPlanChooserView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Admin: Escolher Plano' },
+    },
+    {
       path: '/admin/notifications',
       name: 'notifications',
       component: () => import('@/views/admin/NotificationsListView.vue'),
