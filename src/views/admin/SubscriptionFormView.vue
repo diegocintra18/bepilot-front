@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
 import { usersApi } from '@/api/users'
@@ -54,6 +54,20 @@ const apiError = ref('')
 const loading = ref(false)
 const fetching = ref(false)
 const notFound = ref(false)
+
+const formRef = ref(null)
+
+function autoResizeTextarea(el) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+  el.style.overflow = 'hidden'
+}
+
+function autoResizeAllTextareas() {
+  if (!formRef.value) return
+  formRef.value.querySelectorAll('textarea').forEach((t) => autoResizeTextarea(t))
+}
 
 const providerOptions = [
   { value: 'kiwify', label: PROVIDER_LABELS.kiwify },
@@ -117,6 +131,9 @@ onMounted(async () => {
   } finally {
     fetching.value = false
   }
+
+  await nextTick()
+  autoResizeAllTextareas()
 })
 
 function validate() {
@@ -232,7 +249,12 @@ async function submit() {
 
           <ValidationMessages :message="apiError" class="mt-stack-md" />
 
-          <form novalidate class="mt-stack-lg flex flex-col gap-stack-md" @submit.prevent="submit">
+           <form
+             ref="formRef"
+             novalidate
+             class="mt-stack-lg flex flex-col gap-stack-md"
+             @submit.prevent="submit"
+           >
             <FormField :error="fieldErrors.userId" label="Usuário" name="userId">
               <template #default="{ id, error }">
                 <select
@@ -390,7 +412,8 @@ async function submit() {
                       name="cancellationReason"
                       rows="1"
                       :aria-describedby="error ? `${id}-error` : undefined"
-                      class="w-full resize-y rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                      class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                      @input="autoResizeTextarea($event.target)"
                     ></textarea>
                   </template>
                 </FormField>
@@ -399,14 +422,15 @@ async function submit() {
 
             <FormField :error="fieldErrors.justification" label="Justificativa" name="justification">
               <template #default="{ id, error }">
-                <textarea
-                  :id="id"
-                  v-model="form.justification"
-                  name="justification"
-                  rows="3"
-                  :aria-describedby="error ? `${id}-error` : undefined"
-                  class="w-full resize-y rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-                ></textarea>
+                  <textarea
+                    :id="id"
+                    v-model="form.justification"
+                    name="justification"
+                    rows="3"
+                    :aria-describedby="error ? `${id}-error` : undefined"
+                    class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                    @input="autoResizeTextarea($event.target)"
+                  ></textarea>
               </template>
             </FormField>
 

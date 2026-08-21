@@ -50,6 +50,7 @@ const loadingCourses = ref(false)
 const loadingSubjects = ref(false)
 const notFound = ref(false)
 const initializingCourses = ref(true)
+const formRef = ref(null)
 
 function getSubjectIdsForCourseIds(courseIds) {
   if (!courseIds.length) return []
@@ -104,17 +105,25 @@ watch(selectedCourseIds, () => {
   form.subjectIds = [...lastManualSubjectIds.value]
 })
 
+watch(
+  () => [form.statement, form.explanation],
+  async () => {
+    await nextTick()
+    autoResizeAllTextareas()
+  },
+)
+
 function autoResizeTextarea(el) {
   if (!el) return
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
+  // Evita scrollbar interna após expandir
+  el.style.overflow = 'hidden'
 }
 
 function autoResizeAllTextareas() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const root = document.querySelector('form')
-  if (!root) return
-  root.querySelectorAll('textarea').forEach((t) => autoResizeTextarea(t))
+  if (!formRef.value) return
+  formRef.value.querySelectorAll('textarea').forEach((t) => autoResizeTextarea(t))
 }
 
 function subjectCourses(subject) {
@@ -289,7 +298,12 @@ async function submit() {
 
         <ValidationMessages :message="apiError" class="mt-stack-md" />
 
-        <form novalidate class="mt-stack-lg flex flex-col gap-stack-md" @submit.prevent="submit">
+        <form
+          ref="formRef"
+          novalidate
+          class="mt-stack-lg flex flex-col gap-stack-md"
+          @submit.prevent="submit"
+        >
           <FormField :error="fieldErrors.statement" label="Enunciado" name="statement">
             <template #default="{ id, error }">
               <textarea
@@ -524,6 +538,13 @@ async function submit() {
             <SubmitButton class="sm:!w-auto sm:!px-8" :loading="loading">
               {{ isEdit ? 'Salvar alterações' : 'Criar questão' }}
             </SubmitButton>
+          </div>
+        </form>
+      </section>
+    </div>
+  </AppLayout>
+</template>
+itButton>
           </div>
         </form>
       </section>

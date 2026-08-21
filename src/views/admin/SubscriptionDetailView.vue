@@ -429,8 +429,8 @@ function changedValue(record, key) {
       </template>
     </div>
 
-    <ModalDialog
-      :open="modal.type === 'activate'"
+      <ModalDialog
+        :open="modal.type === 'activate'"
       title="Ativar assinatura"
       description="Confirme a ativação da assinatura e informe a data de expiração."
       confirm-label="Ativar"
@@ -464,10 +464,10 @@ function changedValue(record, key) {
           </template>
         </FormField>
       </form>
-    </ModalDialog>
+      </ModalDialog>
 
-    <ModalDialog
-      :open="modal.type === 'cancel'"
+      <ModalDialog
+        :open="modal.type === 'cancel'"
       title="Cancelar assinatura"
       description="Tem certeza que deseja cancelar esta assinatura?"
       confirm-label="Cancelar assinatura"
@@ -503,10 +503,10 @@ function changedValue(record, key) {
           </template>
         </FormField>
       </form>
-    </ModalDialog>
+      </ModalDialog>
 
-    <ModalDialog
-      :open="modal.type === 'renew'"
+      <ModalDialog
+        :open="modal.type === 'renew'"
       title="Renovar assinatura"
       description="Informe a nova data de expiração para renovar a assinatura."
       confirm-label="Renovar"
@@ -540,6 +540,6 @@ function changedValue(record, key) {
           </template>
         </FormField>
       </form>
-    </ModalDialog>
+      </ModalDialog>
   </AppLayout>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -29,6 +29,20 @@ const loading = ref(false)
 const fetching = ref(false)
 const notFound = ref(false)
 
+const formRef = ref(null)
+
+function autoResizeTextarea(el) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+  el.style.overflow = 'hidden'
+}
+
+function autoResizeAllTextareas() {
+  if (!formRef.value) return
+  formRef.value.querySelectorAll('textarea').forEach((t) => autoResizeTextarea(t))
+}
+
 onMounted(async () => {
   if (!isEdit.value) return
   fetching.value = true
@@ -39,6 +53,9 @@ onMounted(async () => {
     form.description = course.description || ''
     form.isActive = course.isActive
     form.sortOrder = course.sortOrder
+
+    await nextTick()
+    autoResizeAllTextareas()
   } catch (error) {
     if (error.kind === 'notfound') {
       notFound.value = true
@@ -141,7 +158,12 @@ async function submit() {
 
         <ValidationMessages :message="apiError" class="mt-stack-md" />
 
-        <form novalidate class="mt-stack-lg flex flex-col gap-stack-md" @submit.prevent="submit">
+        <form
+          ref="formRef"
+          novalidate
+          class="mt-stack-lg flex flex-col gap-stack-md"
+          @submit.prevent="submit"
+        >
           <div class="grid grid-cols-1 gap-stack-md sm:grid-cols-3">
             <FormField :error="fieldErrors.code" label="Código" name="code">
               <template #default="{ id, error }">
@@ -182,7 +204,8 @@ async function submit() {
                 name="description"
                 rows="3"
                 placeholder="Descrição opcional do curso"
-                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                class="w-full resize-none rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-background placeholder:text-on-surface-variant focus:border-primary focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+                @input="autoResizeTextarea($event.target)"
               />
             </template>
           </FormField>
