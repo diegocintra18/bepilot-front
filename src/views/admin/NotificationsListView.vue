@@ -20,6 +20,8 @@ const readOptions = [
 
 const notificationTypeLabels = Object.freeze({
   subscription_cancellation_requested: 'Cancelamento solicitado',
+  ai_question_batch_generated: 'Questões geradas',
+  ai_question_batch_failed: 'Falha na geração de questões',
 })
 
 function typeLabel(type) {
